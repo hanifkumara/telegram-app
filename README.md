@@ -1,4 +1,4 @@
-# maps-socket
+# Telegram App
 
 ## Project setup
 ```
