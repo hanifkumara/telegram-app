@@ -9,7 +9,10 @@ export default new Vuex.Store({
   state: {
     id: '' || localStorage.getItem('id'),
     token: '' || localStorage.getItem('token'),
-    contact: []
+    contact: [],
+    historyChat: [],
+    myProfile: {},
+    profile: {}
   },
   mutations: {
     SET_AUTH (state, payload) {
@@ -18,6 +21,15 @@ export default new Vuex.Store({
     },
     GET_ALL_CONTACT (state, payload) {
       state.contact = payload
+    },
+    GET_PROFILE_USER (state, payload) {
+      state.profile = payload
+    },
+    GET_MY_PROFILE (state, payload) {
+      state.myProfile = payload
+    },
+    SET_HISTORY_PRIVATE (state, payload) {
+      state.historyChat = payload
     },
     REMOVE_TOKEN (state) {
       state.token = null
@@ -28,12 +40,67 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios.get(`${process.env.VUE_APP_SERVICE_API}/users/list-users`)
           .then((res) => {
-            const { result } = res.data
+            const result = res.data.result
+            console.log(result)
             context.commit('GET_ALL_CONTACT', result)
             resolve(result)
           })
           .catch((err) => {
             reject(err)
+          })
+      })
+    },
+    getProfileUser (context, id) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/users/${id}`)
+          .then((res) => {
+            const result = res.data.result[0]
+            context.commit('GET_PROFILE_USER', result)
+            resolve(result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    getMyProfile (context) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/users/myprofile`)
+          .then((res) => {
+            const result = res.data.result[0]
+            context.commit('GET_MY_PROFILE', result)
+            resolve(result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    updateMyProfile (context, payload) {
+      return new Promise((resolve, reject) => {
+        console.log(payload)
+        axios.patch(`${process.env.VUE_APP_SERVICE_API}/users`, payload)
+          .then(res => {
+            const { result } = res.data
+            console.log('ini result update', result)
+            resolve(result)
+          })
+          .catch(err => {
+            console.log(err.response.data)
+            reject(err.response.data.err.message)
+          })
+      })
+    },
+    historyChatPrivate (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${process.env.VUE_APP_SERVICE_API}/message/chat-private`, payload)
+          .then(res => {
+            const result = res.data.result
+            context.commit('SET_HISTORY_PRIVATE', result)
+            resolve(result)
+          })
+          .catch(err => {
+            reject(err.response)
           })
       })
     },
@@ -98,6 +165,15 @@ export default new Vuex.Store({
   getters: {
     allContact (state) {
       return state.contact
+    },
+    profileUser (state) {
+      return state.profile
+    },
+    myProfile (state) {
+      return state.myProfile
+    },
+    chatHistory (state) {
+      return state.historyChat
     }
   },
   modules: {

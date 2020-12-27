@@ -8,7 +8,11 @@ import VueGeolocation from 'vue-browser-geolocation'
 import Map from './components/Map.vue'
 import 'leaflet/dist/leaflet.css'
 import { Icon } from 'leaflet'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import { BootstrapVue } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false
 
