@@ -6,13 +6,17 @@
       <div class="email">
         <label for="email">Email</label>
         <input type="text" placeholder="Enter your Email" id="email" v-model="email" autocomplete="off">
+        <p class="text-danger" v-if="email.length >=1 && !email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)">Format email invalid</p>
       </div>
       <div class="password">
         <label for="show">Password</label>
-        <input type="password" placeholder="Input your password" v-model="password" autocomplete="off" id="show">
-        <div class="icon-eye" @click="showPassword">
-          <img src="@/assets/img/ic_sharp-remove-red-eye.png" alt="icon-eye">
+        <div class="form-input-password">
+          <input type="password" placeholder="Input your password" v-model="password" autocomplete="off" id="show">
+          <div class="icon-eye" @click="showPassword">
+            <img src="@/assets/img/ic_sharp-remove-red-eye.png" alt="icon-eye">
+          </div>
         </div>
+        <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
     <h5 class="forgot-password">Forgot password?</h5>
     <button class="btn login">Login</button>
@@ -35,6 +39,7 @@
 <script>
 import showPass from '../../mixins/showPassword'
 import { mapActions } from 'vuex'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'Login',
@@ -48,18 +53,65 @@ export default {
   methods: {
     ...mapActions(['login']),
     handleLogin () {
-      const payload = {
-        email: this.email,
-        password: this.password
+      if (!this.email) {
+        Swal.fire(
+          'Fill email required',
+          '',
+          'error'
+        )
+        return
       }
-      this.login(payload)
-        .then((res) => {
-          console.log(res)
-          this.$router.push({ name: 'ChatList' })
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      if (!this.email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+        Swal.fire(
+          'Format email invalid',
+          '',
+          'error'
+        )
+        return
+      }
+      if (!this.password) {
+        Swal.fire(
+          'Fill password required',
+          '',
+          'error'
+        )
+        return
+      }
+      if (this.password.length <= 5) {
+        Swal.fire(
+          'length password must be more than 5 char',
+          '',
+          'error'
+        )
+      } else {
+        const payload = {
+          email: this.email,
+          password: this.password
+        }
+        this.login(payload)
+          .then((res) => {
+            Swal.fire(
+              'Login Success!!',
+              '',
+              'success'
+            )
+            this.$router.push({ name: 'ChatList' })
+          })
+          .catch((err) => {
+            let message = ''
+            if (err === 'Email Unlisted!!') {
+              message = err
+            } else {
+              message = err
+            }
+            console.log(err)
+            Swal.fire(
+              `${message}`,
+              '',
+              'error'
+            )
+          })
+      }
     },
     toSignup () {
       this.$router.push({ name: 'Register' })
@@ -102,7 +154,6 @@ form input:focus{
 }
 .password{
   margin-top: 20px;
-  position: relative;
 }
 .icon-eye{
   position: absolute;
@@ -147,5 +198,8 @@ form input:focus{
   font-size: 15px;
   display: flex;
   justify-content: center;
+}
+.form-input-password{
+  position: relative
 }
 </style>

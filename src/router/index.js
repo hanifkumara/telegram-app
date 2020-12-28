@@ -10,6 +10,8 @@ import MapPage from '../views/map/Map.vue'
 import Map2 from '../views/map/Map2.vue'
 import ChatList from '../views/main/ChatList.vue'
 import LoginDev from '../views/login/LoginDev.vue'
+import store from '../store/index'
+import Swal from 'sweetalert2'
 
 Vue.use(VueRouter)
 
@@ -43,6 +45,7 @@ const routes = [
     name: 'Auth',
     component: Auth,
     redirect: '/auth/login',
+    meta: { requiresVisitor: true },
     children: [
       {
         path: 'login',
@@ -61,6 +64,7 @@ const routes = [
     name: 'Main',
     component: Main,
     redirect: '/main/chat-list',
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'chat-list',
@@ -85,6 +89,39 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!store.getters.isLogin) {
+      Swal.fire(
+        'Must be logged in!!',
+        '',
+        'error'
+      )
+      next({
+        path: '/auth/login'
+      })
+    } else {
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.requiresVisitor)) {
+    if (store.getters.isLogin) {
+      Swal.fire(
+        'You already logged in!!',
+        '',
+        'error'
+      )
+      next({
+        path: '/main/chat-list'
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // make sure to always call next()!
+  }
 })
 
 export default router

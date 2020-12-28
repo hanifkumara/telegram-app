@@ -9,56 +9,59 @@
               <img src="@/assets/img/Menu.png" alt="menu-icon">
             </div>
           </div>
-          <div class="my-profile"  ref="menuToggle">
+          <div class="my-profile" ref="menuToggle">
             <div class="middle-menu-toggle">
               <h4 style="color: #7E98DF; margin-bottom: 20px;">{{myProfile.username}}</h4>
-              <div class="img-profile-toggle">
+              <label class="img-profile-toggle">
                 <img :src="myProfile.photo" alt="profile-user">
-              </div>
-              <h4>{{myProfile.name}}</h4>
+                <input type="file" @change="hanldeUpload"/>
+              </label>
+              <h4 :class="[myProfile.name.length > 13 ? 'long-name' : '']">{{myProfile.name}}</h4>
               <h6 style="color: #848484;">{{myProfile.username}}</h6>
             </div>
             <h4 style="margin-bottom: 12px;">Account</h4>
-            <h6>{{myProfile.phoneNumber}}</h6>
-            <h6 style="color: #7E98DF;">Tap to change phone number</h6>
+            <input
+              class="form-control"
+              v-if="editPhone"
+              v-model="myProfile.phoneNumber"
+              @blur="editPhone = false; $emit('update')"
+              @keyup.enter="handlePhone"
+              v-focus
+            >
+            <div v-else>
+              <h6 @click="editPhone = true;">{{myProfile.phoneNumber}}</h6>
+            </div>
+            <h6 style="color: #7E98DF; cursor: pointer;" @click="editPhone = true;">Tap to change phone number</h6>
             <hr style="margin: 12px 0;">
-            <h6>{{myProfile.username}}</h6>
-            <h6 v-if="!myProfile.username">Please add your username</h6>
+            <input
+              class="form-control"
+              v-if="editUsername"
+              v-model="myProfile.username"
+              @blur="editUsername = false; $emit('update')"
+              @keyup.enter="handleUsername"
+              v-focus
+            >
+            <div v-else>
+              <h6 @click="editUsername = true;">{{myProfile.username}}</h6>
+            </div>
+            <h6 v-if="!myProfile.username" @click="editUsername = true;">Please add your username</h6>
             <h6 style="color: #848484;">Username</h6>
             <hr style="margin: 12px 0;">
-            <h6 v-if="!myProfile.biodata">Please add your Biodata</h6>
-            <h6 class="biodata">{{myProfile.biodata}}</h6>
+            <textarea
+              class="form-control"
+              v-if="editBiodata"
+              v-model="myProfile.biodata"
+              @blur="editBiodata = false; $emit('update')"
+              @keyup.enter="handleBiodata"
+              v-focus
+            ></textarea>
+            <div v-else>
+              <h6 class="biodata" @click="editBiodata = true;">{{myProfile.biodata}}</h6>
+            </div>
+            <h6 v-if="!myProfile.biodata" @click="editBiodata = true;">Please add your Biodata</h6>
             <h6 style="color: #848484;">Bio</h6>
             <hr style="margin: 12px 0;">
             <h6>Settings</h6>
-            <div class="settings d-flex align-items-center mt-2" @click="modalShow = !modalShow">
-              <div class="icon-edit">
-                <img src="@/assets/img/icons8-edit-104.png" alt="icon-edit">
-              </div>
-              <h6>Edit profile</h6>
-              <b-modal title="Edit My Profile" hide-footer v-model="modalShow">
-                <div class="d-flex flex-column align-items-center">
-                  <div class="img-profile-edit">
-                    <img :src="myProfile.photo" alt="profile-user">
-                  </div>
-                  <label class="custom-file-upload">
-                      <input type="file" @change="hanldeUpload"/>
-                      Update Photo
-                  </label>
-                </div>
-              <form @submit.prevent="handleSubmit" class="form-toggle">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="text" class="form-control" v-model="phoneNumber" :placeholder="myProfile.phoneNumber" id="phoneNumber" autocomplete="off">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" v-model="username" :placeholder="myProfile.username" id="username" autocomplete="off">
-                <label for="biodata">Biodata</label>
-                <textarea type="text" class="form-control" v-model="biodata" :placeholder="myProfile.biodata" id="biodata" rows="3"></textarea>
-                <div class="button-edit d-flex justify-content-end mt-2">
-                  <button class="btn btn-primary" type="submit">Edit Profile</button>
-                </div>
-              </form>
-            </b-modal>
-            </div>
             <div class="my-location d-flex align-items-center" @click="modalShow2 = !modalShow2">
               <div class="icon-maps">
                 <img src="@/assets/img/icons8-map-marker-100.png" alt="icon-maps">
@@ -78,6 +81,7 @@
                 </l-map>
               </b-modal>
             </div>
+            <h6 class="mt-2" style="cursor: pointer;" @click.prevent="logout">Logout</h6>
           </div>
           <div class="input-search my-3 d-flex justify-content-between align-items-center">
             <input type="text" placeholder="Search user">
@@ -87,10 +91,10 @@
             </div>
           </div>
           <div class="menu-chat d-flex justify-content-between">
-            <div class="btn all">
+            <div class="btn all btn-primary">
               <p>All</p>
             </div>
-            <div class="btn btn-primary important">
+            <div class="btn important">
               <p>Important</p>
             </div>
             <div class="btn unread">
@@ -104,12 +108,13 @@
                   <img :src="data.photo" alt="">
                 </div>
                 <div class="name-chat mx-2">
-                  <h5 >{{data.name}}</h5>
+                  <h5 :class="[data.name.length > 13 ? 'contact-long-name' : '']">{{data.name}}</h5>
                   <p>Pesan singkat</p>
                 </div>
               </div>
-              <div class="time">
+              <div class="time-chat">
                 <h6>5.30</h6>
+                <div class="count-new-chat">2</div>
               </div>
             </div>
           </div>
@@ -148,7 +153,10 @@ export default {
       image: null,
       phoneNumber: '',
       username: '',
-      biodata: ''
+      biodata: '',
+      editUsername: false,
+      editPhone: false,
+      editBiodata: false
     }
   },
   components: {
@@ -157,7 +165,7 @@ export default {
     LMarker
   },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'logout']),
     handleToggle () {
       const handle = this.$refs.menuToggle
       handle.classList.toggle('slide')
@@ -183,21 +191,13 @@ export default {
         })
     },
     hanldeUpload (e) {
-      console.log(e.target.files[0])
-      this.image = e.target.files[0]
-    },
-    handleSubmit () {
-      console.log('anda klik handle submit')
+      const result = e.target.files[0]
       const data = new FormData()
-      data.append('photo', this.image)
-      data.append('username', this.username)
-      data.append('phoneNumber', this.phoneNumber)
-      data.append('biodata', this.biodata)
-
+      data.append('photo', result)
       this.updateMyProfile(data)
         .then(res => {
           Swal.fire(
-            'Edit profile success',
+            'Edit Photo success',
             '',
             'success'
           )
@@ -215,6 +215,57 @@ export default {
             '',
             'error'
           )
+          console.log(err)
+        })
+    },
+    handleUsername () {
+      const payload = {
+        username: this.myProfile.username
+      }
+      this.updateMyProfile(payload)
+        .then(res => {
+          Swal.fire(
+            'Edit username success',
+            `Your username has changed to @${payload.username}`,
+            'success'
+          )
+          this.getMyProfile()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    handlePhone () {
+      const payload = {
+        phoneNumber: this.myProfile.phoneNumber
+      }
+      this.updateMyProfile(payload)
+        .then(res => {
+          Swal.fire(
+            'Edit Phone Number success',
+            `Your number has changed to ${payload.phoneNumber}`,
+            'success'
+          )
+          this.getMyProfile()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    handleBiodata () {
+      const payload = {
+        biodata: this.myProfile.biodata
+      }
+      this.updateMyProfile(payload)
+        .then(res => {
+          Swal.fire(
+            'Edit biodata success',
+            '',
+            'success'
+          )
+          this.getMyProfile()
+        })
+        .catch(err => {
           console.log(err)
         })
     }
@@ -235,6 +286,20 @@ export default {
   },
   computed: {
     ...mapGetters(['allContact', 'profileUser', 'myProfile', 'chatHistory'])
+  },
+  watch: {
+    value: function () {
+      this.myProfile.phoneNumber = this.value
+      this.myProfile.username = this.value
+      this.myProfile.biodata = this.value
+    }
+  },
+  directives: {
+    focus: {
+      inserted (el) {
+        el.focus()
+      }
+    }
   }
 }
 </script>
@@ -248,7 +313,7 @@ export default {
 .content-right{
   width: 100%;
   height: 100vh;
-  border: 1px solid;
+  border-left: 1px solid #E5E5E5;
 }
 .photo{
   width: 50px;
@@ -277,6 +342,9 @@ export default {
   border: .2px solid;
   color: #848484;
   margin-right: 10px;
+}
+.input-search > input:focus{
+  outline: none;
 }
 .input-search>[alt="icon-search"]{
   position: absolute;
@@ -328,15 +396,17 @@ export default {
   position: absolute;
   left: 0;
   width: 100%;
-  height: fit-content;
+  height: 570px;
+  overflow: auto;
   background-color: #fff;
-  transition: .4s;
 }
 .img-profile-toggle{
-  width: 60px;
-  height: 60px;
+  cursor: pointer;
+  width: 90px;
+  height: 90px;
   border-radius: 15px;
   margin-top: 20px;
+  background-color: rgb(209, 196, 196);
 }
 .img-profile-toggle > img {
   border-radius: 15px;
@@ -423,7 +493,30 @@ button.btn.btn-primary{
   width: 30%;
 }
 .biodata{
-  overflow: auto;
-  height: 50px;
+  height: fit-content;
+}
+.icon-menu{
+  cursor: pointer;
+}
+.icon-menu:hover{
+  transform: scale(1.04)
+}
+.long-name{
+  text-align: center;
+  font-size: 20px;
+}
+.contact-long-name{
+  font-size: 18px;
+}
+.count-new-chat{
+  color: white;
+  background: #7E98DF;
+  font-size: 12px;
+  padding: 5px 0;
+  border-radius: 50%;
+  text-align: center;
+}
+input#username{
+  margin-top: -30px;
 }
 </style>

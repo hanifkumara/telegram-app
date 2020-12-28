@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 import router from '../router/index'
+import Swal from 'sweetalert2'
 
 Vue.use(Vuex)
 
@@ -120,14 +121,30 @@ export default new Vuex.Store({
             resolve(result)
           })
           .catch(err => {
-            reject(err.response.data.err)
+            reject(err.response.data.err.message)
           })
       })
+    },
+    logout (context) {
+      localStorage.clear()
+      context.commit('REMOVE_TOKEN')
+      Swal.fire(
+        'Logout Sucess!',
+        'See you again!',
+        'success'
+      )
+      router.push({ name: 'Auth' })
     },
     signup (context, payload) {
       return new Promise((resolve, reject) => {
         axios.post(`${process.env.VUE_APP_SERVICE_API}/auth/register`, payload)
           .then(res => {
+            Swal.fire(
+              'Register Sucess!',
+              '',
+              'success'
+            )
+            router.push({ name: 'Auth' })
             resolve(res)
           })
           .catch(err => {
@@ -174,6 +191,9 @@ export default new Vuex.Store({
     },
     chatHistory (state) {
       return state.historyChat
+    },
+    isLogin (state) {
+      return state.token !== null
     }
   },
   modules: {

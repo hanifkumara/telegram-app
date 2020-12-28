@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="top-menu d-flex justify-content-between align-items-center">
+    <div class="top-menu d-flex justify-content-between align-items-center" v-if="dataProfile.photo">
       <div class="menu-left">
         <div class="photo-name d-flex">
           <div class="photo-chat">
@@ -31,25 +31,33 @@
               <h4>{{dataProfile.phoneNumber}}</h4>
               <label for="">Phone Number</label>
               <hr>
-              <h4 style="font-weight: 400; font-size: 18px;">{{dataProfile.biodata}}</h4>
-              <label for="">Biodata</label>
+              <h4 style="font-weight: 600; font-size: 20px;">{{dataProfile.biodata}}</h4>
+              <label for="">Bio</label>
             </div>
           </b-modal>
       </div>
     </div>
-    <div class="content-chat">
+    <div class="content-chat" ref="messageBody" v-if="dataProfile.photo">
       <div class="looping" v-for="(data, index) in chatHistory" :key="index">
-        <div class="card-message mt-2" v-if="data.status === 'sender' || data.idReceiver === idLogin ">
-          <h5>{{data.message}}</h5>
-        </div>
-        <div class="container-message-right" v-else>
-          <div class="card-message-right">
+        <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin ">
+          <div class="icon-profile-left">
+            <img src="" alt="">
+          </div>
+          <div class="card-message-left mt-2">
             <h5>{{data.message}}</h5>
+          </div>
+        </div>
+        <div class="container-message-right d-flex justify-content-end" v-else>
+          <div class="card-message-right mt-2">
+            <h5>{{data.message}}</h5>
+          </div>
+          <div class="icon-profile-right">
+            <img src="" alt="">
           </div>
         </div>
       </div>
     </div>
-    <div class="bottom-chat">
+    <div class="bottom-chat" v-if="dataProfile.photo">
       <div class="input-chat">
         <input type="text" placeholder="Input your message . . ."  v-model="inputMessage" @keypress.enter="handleEmit">
         <div class="icon-chat d-flex justify-content-between">
@@ -65,6 +73,7 @@
         </div>
       </div>
     </div>
+    <div class="chat-empty" v-else>Please select a chat to start messaging</div>
   </div>
 </template>
 
@@ -85,12 +94,15 @@ export default {
       const sender = localStorage.getItem('id')
       this.socket.emit('messagePrivate', { idSender: sender, idReceiver: receiver, message: this.inputMessage })
       this.inputMessage = ''
+      const handleMessage = this.$refs.messageBody
+      handleMessage.scrollTop = handleMessage.scrollHeight
+      console.log(handleMessage)
     }
   },
   mounted () {
+    console.log(this.chatHistory)
     this.socket.on('sendBack', data => {
       console.log('cek', data)
-      console.log('astagfirullah')
       this.chatHistory.push(data)
     })
   }
@@ -104,7 +116,7 @@ export default {
 .photo-chat{
   width: 50px;
   height: 50px;
-  background-color: grey;
+  background-color: rgb(211, 209, 209);
   border-radius: 10px;
   margin-right: 10px;
 }
@@ -112,6 +124,7 @@ export default {
   margin: 0;
 }
 .photo-chat > img {
+  object-fit: contain;
   height: 100%;
   width: 100%;
   border-radius: 10px;
@@ -119,12 +132,10 @@ export default {
 .content-chat {
   height: 480px;
   background-color: #FAFAFA;
-  overflow: auto;
-  padding: 0 10px;
-  padding-bottom: 5px;
+  overflow-x: scroll;
+  padding: 8px 10px;
 }
 .bottom-chat{
-  border: 1px solid;
   padding: 20px 40px;
 }
 .input-chat{
@@ -133,9 +144,11 @@ export default {
 }
 .input-chat>input{
   width: 100%;
-  border: .4px solid;
+  border: none;
   border-radius: 10px;
   padding: 8px 30px;
+  padding-right: 15%;
+  background: #FAFAFA;
 }
 .input-chat>input:focus{
   outline: none;
@@ -162,10 +175,10 @@ export default {
   background-color: rgb(211, 209, 209);
 }
 .photo-chat-modal > img{
-  border-radius: 25px;
   object-fit: contain;
   width: 100%;
   height: 100%;
+  border-radius: 25px;
 }
 .profile-modal{
   display: flex;
@@ -175,29 +188,66 @@ export default {
 .icon-profile:focus{
   outline: none;
 }
-.card-message{
-  padding: 8px 30px;
-  border-radius: 30px 30px 30px 0;
+.card-message-left{
+  width: fit-content;
   background-color: rgb(182, 182, 248);
   color: white;
-  width: fit-content
-}
-.container-message-right{
-  display: flex;
-  justify-content: flex-end
+  padding: 8px 30px;
+  margin-left: 10px;
+  border-radius: 30px 30px 30px 0;
 }
 .card-message-right{
   padding: 8px 30px;
   border-radius: 30px 30px 0 30px;
   background-color: white;
   color: black;
-  width: fit-content
+  width: fit-content;
+  margin-right: 10px;
 }
-
+.icon-profile-right{
+  width: 50px;
+  height: 50px;
+  background-color: grey;
+  border-radius: 10px;
+}
+.icon-profile-right > img{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+::-webkit-scrollbar {
+  width: 2px;
+}
+.chat-empty{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #FAFAFA;
+  height: 100vh;
+  color: #848484;
+  font-weight: 700;
+  font-size: 27px;
+}
+.icon-profile-left{
+  width: 50px;
+  height: 50px;
+  background-color: grey;
+  border-radius: 10px;
+}
+.icon-profile-left > img{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
 @media screen and (max-width: 786px) {
   .content-chat {
     height: 480px;
     font-size: 18px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .content-chat {
+    font-size: 14px;
   }
 }
 </style>
