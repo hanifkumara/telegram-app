@@ -8,7 +8,7 @@
           </div>
           <div class="status">
             <h5>{{dataProfile.name}}</h5>
-            <h6>Online</h6>
+            <h6>{{dataProfile.socketId}}</h6>
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
       <div class="looping" v-for="(data, index) in chatHistory" :key="index">
         <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin ">
           <div class="icon-profile-left">
-            <img src="" alt="">
+            <img :src="dataProfile.photo" alt="receiver-photo">
           </div>
           <div class="card-message-left mt-2">
             <h5>{{data.message}}</h5>
@@ -52,7 +52,7 @@
             <h5>{{data.message}}</h5>
           </div>
           <div class="icon-profile-right">
-            <img src="" alt="">
+            <img :src="myProfile.photo" alt="my-photo">
           </div>
         </div>
       </div>
@@ -78,33 +78,45 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ChatList',
-  props: ['data-profile', 'socket', 'chat-history'],
+  props: ['data-profile', 'socket', 'my-profile', 'id-friend'],
   data () {
     return {
       inputMessage: '',
-      idLogin: localStorage.getItem('id')
+      idLogin: localStorage.getItem('id'),
+      status: ''
     }
   },
   methods: {
     handleEmit () {
       const receiver = this.dataProfile.id
       const sender = localStorage.getItem('id')
-      this.socket.emit('messagePrivate', { idSender: sender, idReceiver: receiver, message: this.inputMessage })
+      this.socket.emit('messagePrivate', { idSender: sender, idReceiver: receiver, message: this.inputMessage, name: this.myProfile.name })
       this.inputMessage = ''
-      const handleMessage = this.$refs.messageBody
-      handleMessage.scrollTop = handleMessage.scrollHeight
-      console.log(handleMessage)
     }
   },
   mounted () {
-    console.log(this.chatHistory)
+    this.socket.on('status', data => {
+      this.status = data
+    })
     this.socket.on('sendBack', data => {
-      console.log('cek', data)
+      if (data.notif) {
+        this.$toasted.show(`Anda menerima pesan dari ${data.name}`, {
+          type: 'info',
+          duration: 3000,
+          keepOnHover: true
+        })
+      }
+      const handleMessage = this.$refs.messageBody
+      handleMessage.scrollTop = handleMessage.scrollHeight
       this.chatHistory.push(data)
     })
+  },
+  computed: {
+    ...mapGetters(['chatHistory'])
   }
 }
 </script>
@@ -131,8 +143,8 @@ export default {
 }
 .content-chat {
   height: 480px;
-  background-color: #FAFAFA;
-  overflow-x: scroll;
+  background-color: #f1ebeb;
+  overflow: scroll;
   padding: 8px 10px;
 }
 .bottom-chat{

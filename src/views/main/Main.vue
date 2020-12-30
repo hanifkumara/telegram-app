@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div class="content-left">
           <div class="title-left d-flex justify-content-between align-items-center">
             <h2 style="color: #7E98DF;">Telegram</h2>
@@ -16,7 +16,7 @@
                 <img :src="myProfile.photo" alt="profile-user">
                 <input type="file" @change="hanldeUpload"/>
               </label>
-              <h4 :class="[myProfile.name.length > 13 ? 'long-name' : '']">{{myProfile.name}}</h4>
+              <h4>{{myProfile.name}}</h4>
               <h6 style="color: #848484;">{{myProfile.username}}</h6>
             </div>
             <h4 style="margin-bottom: 12px;">Account</h4>
@@ -108,7 +108,7 @@
                   <img :src="data.photo" alt="">
                 </div>
                 <div class="name-chat mx-2">
-                  <h5 :class="[data.name.length > 13 ? 'contact-long-name' : '']">{{data.name}}</h5>
+                  <h5>{{data.name}}</h5>
                   <p>Pesan singkat</p>
                 </div>
               </div>
@@ -120,9 +120,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-9">
+      <div class="col-md-8">
         <div class="content-right">
-          <router-view :socket="socket" :data-profile="profileUser" :chat-history="chatHistory"/>
+          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend"/>
         </div>
       </div>
     </div>
@@ -140,6 +140,7 @@ export default {
   name: 'Main',
   data () {
     return {
+      myId: localStorage.getItem('id'),
       allMassage: [],
       socket: io('http://localhost:5000'),
       dataProfile: [],
@@ -156,7 +157,8 @@ export default {
       biodata: '',
       editUsername: false,
       editPhone: false,
-      editBiodata: false
+      editBiodata: false,
+      idFriend: ''
     }
   },
   components: {
@@ -171,9 +173,7 @@ export default {
       handle.classList.toggle('slide')
     },
     handleProfileUser (id) {
-      const sender = localStorage.getItem('id')
-      const receiver = id
-      this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })
+      this.idFriend = id
       const payload = {
         idReceiver: id
       }
@@ -271,6 +271,9 @@ export default {
     }
   },
   mounted () {
+    const sender = localStorage.getItem('id')
+    const receiver = this.idFriend
+    this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })
     this.getAllContact()
       .then(res => {
         console.log(res)
@@ -283,9 +286,10 @@ export default {
         this.markerLatLng = [coordinates.lat, coordinates.lng]
         console.log(coordinates)
       })
+    this.socket.emit('handleStatus', this.myId)
   },
   computed: {
-    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'chatHistory'])
+    ...mapGetters(['allContact', 'profileUser', 'myProfile'])
   },
   watch: {
     value: function () {
