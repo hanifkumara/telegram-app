@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'ChatList',
@@ -91,6 +91,22 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['historyChatPrivate']),
+    // const result = res.data.result
+    handleHistory () {
+      const payload = {
+        idReceiver: this.dataProfile.id
+      }
+      this.historyChatPrivate(payload)
+        .then(res => {
+          const result = res.data.result
+          console.log('ini result', result)
+          this.chatHistory.push(result)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
     handleEmit () {
       const receiver = this.dataProfile.id
       const sender = localStorage.getItem('id')
@@ -110,10 +126,19 @@ export default {
           keepOnHover: true
         })
       }
-      const handleMessage = this.$refs.messageBody
-      handleMessage.scrollTop = handleMessage.scrollHeight
-      this.chatHistory.push(data)
+      this.handleHistory()
     })
+  },
+  watch: {
+    chatHistory: function () {
+      setTimeout(() => {
+        const container = this.$refs.messageBody
+        container.scroll({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        })
+      }, 100)
+    }
   },
   computed: {
     ...mapGetters(['chatHistory'])

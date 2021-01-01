@@ -4,12 +4,50 @@
       <div class="col-md-4">
         <div class="content-left">
           <div class="title-left d-flex justify-content-between align-items-center">
-            <h2 style="color: #7E98DF;">Telegram</h2>
-            <div class="icon-menu" @click="handleToggle">
+            <h2 style="color: #7E98DF;" @click="toHome">Telegram</h2>
+            <div @click="handleToggle" class="icon-menu">
               <img src="@/assets/img/Menu.png" alt="menu-icon">
             </div>
           </div>
-          <div class="my-profile" ref="menuToggle">
+          <div class="container-popup" ref="popup">
+            <div class="popup setting" @click="handleSetting">
+              <div class="icon-popup">
+                <img src="@/assets/img/Settings.png" alt="icon-setting">
+              </div>
+              <h6>Settings</h6>
+            </div>
+            <div class="popup contacts">
+              <div class="icon-popup">
+                <img src="@/assets/img/Contacts.png" alt="icon-contact">
+              </div>
+              <h6>Contacts</h6>
+            </div>
+            <div class="popup calls">
+              <div class="icon-popup">
+                <img src="@/assets/img/Vector.png" alt="icon-calls">
+              </div>
+              <h6>Calls</h6>
+            </div>
+            <div class="popup save-messages">
+              <div class="icon-popup">
+                <img src="@/assets/img/Rectangle 37.png" alt="icon-save-message">
+              </div>
+              <h6>Save Messages</h6>
+            </div>
+            <div class="popup invite-friend" @click="handleAddContact">
+              <div class="icon-popup">
+                <img src="@/assets/img/Invite friends.png" alt="icon-invite-friend">
+              </div>
+              <h6>Invite Friend</h6>
+            </div>
+            <div class="popup telegram-faq">
+              <div class="icon-popup">
+                <img src="@/assets/img/FAQ.png" alt="icon telegram-faq">
+              </div>
+              <h6>Telegram FAQ</h6>
+            </div>
+          </div>
+          <div class="my-profile" ref="myProfile">
             <div class="middle-menu-toggle">
               <h4 style="color: #7E98DF; margin-bottom: 20px;">{{myProfile.username}}</h4>
               <label class="img-profile-toggle">
@@ -68,6 +106,7 @@
               </div>
               <h6 class="mt-2">My Location</h6>
               <b-modal size="xl" title="My Location" hide-footer v-model="modalShow2">
+                <div>
                 <l-map
                   :zoom="zoom"
                   :center="center"
@@ -79,9 +118,35 @@
                 />
                 <l-marker :lat-lng="markerLatLng" ></l-marker>
                 </l-map>
+                </div>
               </b-modal>
             </div>
-            <h6 class="mt-2" style="cursor: pointer;" @click.prevent="logout">Logout</h6>
+            <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
+          </div>
+          <div class="container-add-contact" ref="addContact">
+            <h4>Ini semua username</h4>
+            <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
+              <div class="card-left d-flex">
+                <div class="photo">
+                  <img :src="data.photo" alt="">
+                </div>
+                <div class="name-chat mx-2">
+                  <h5>{{data.name}}</h5>
+                  <p v-if="!data.biodata">Hey there! I am using TelegramApp</p>
+                  <p>{{data.biodata}}</p>
+                </div>
+              </div>
+              <div class="time-chat">
+                <div @click="handleInvite(data.id)">
+                  <div class="unfriend" v-if="handleIconUnfriend === data.id">
+                    <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
+                  </div>
+                  <div class="add-friend" v-else >
+                    <img src="@/assets/img/icons8-add-user-group-man-man-50.png" alt="add-friend">
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="input-search my-3 d-flex justify-content-between align-items-center">
             <input type="text" placeholder="Search user">
@@ -102,13 +167,16 @@
             </div>
           </div>
           <div class="container-contact">
-            <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
-              <div class="card-left d-flex" @click="handleProfileUser(data.id)">
+            <div v-if="allFriend.length < 1">
+              <h2>Bsimillah</h2>
+            </div>
+            <div class="d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
+              <div class="card-left d-flex" @click="handleProfileUser(data.friendId)">
                 <div class="photo">
-                  <img :src="data.photo" alt="">
+                  <img :src="data.friendPhoto" alt="photo-friend">
                 </div>
                 <div class="name-chat mx-2">
-                  <h5>{{data.name}}</h5>
+                  <h5>{{data.friendName}}</h5>
                   <p>Pesan singkat</p>
                 </div>
               </div>
@@ -167,10 +235,62 @@ export default {
     LMarker
   },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'logout']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend']),
+    toHome () {
+      const myProfile = this.$refs.myProfile
+      const addContact = this.$refs.addContact
+      myProfile.style.display = 'none'
+      addContact.style.display = 'none'
+      this.getAllFriend()
+    },
+    handleLogout () {
+      const data = {
+        socketId: 'Offline'
+      }
+      this.logout(data)
+        .then(res => {
+          console.log('coba bro')
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
     handleToggle () {
-      const handle = this.$refs.menuToggle
-      handle.classList.toggle('slide')
+      const handle = this.$refs.popup
+      if (handle.style.display === 'none') {
+        handle.style.display = 'block'
+      } else {
+        handle.style.display = 'none'
+      }
+    },
+    handleSetting () {
+      const handle = this.$refs.myProfile
+      if (handle.style.display === 'none') {
+        handle.style.display = 'block'
+      } else {
+        handle.style.display = 'none'
+      }
+    },
+    handleAddContact () {
+      const handle = this.$refs.addContact
+      if (handle.style.display === 'none') {
+        handle.style.display = 'block'
+      } else {
+        handle.style.display = 'none'
+      }
+    },
+    handleInvite (id) {
+      this.addFriend({ friendId: id })
+        .then((result) => {
+          Swal.fire(
+            result.message,
+            `${result.message === 'Unfriend success' ? 'Now you cant send message to this friend' : ''}`,
+            'success'
+          )
+          console.log('ini result add friend', result)
+        }).catch((err) => {
+          console.log(err)
+        })
     },
     handleProfileUser (id) {
       this.idFriend = id
@@ -275,9 +395,6 @@ export default {
     const receiver = this.idFriend
     this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })
     this.getAllContact()
-      .then(res => {
-        console.log(res)
-      })
     this.getMyProfile()
     console.log(this.myProfile)
     this.$getLocation()
@@ -287,9 +404,17 @@ export default {
         console.log(coordinates)
       })
     this.socket.emit('handleStatus', this.myId)
+    this.getAllFriend()
   },
   computed: {
-    ...mapGetters(['allContact', 'profileUser', 'myProfile'])
+    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend']),
+    handleIconUnfriend () {
+      const data = this.allFriend
+      const result = data.filter((value, index) => {
+        return data[index].friendId
+      })
+      return result
+    }
   },
   watch: {
     value: function () {
@@ -310,6 +435,7 @@ export default {
 
 <style scoped>
 .content-left{
+  position: relative;
   width: 100%;
   height: 100vh;
   padding: 20px 0;
@@ -386,23 +512,20 @@ export default {
 .my-profile{
   z-index: 2;
   display: none;
-}
-.my-profile h4, h5, h6 {
-  margin: 0;
-}
-.my-profile > h6 {
-  margin-bottom: 5px;
-}
-.slide{
   padding: 0 22px;
   padding-top: 20px;
-  display: block;
   position: absolute;
   left: 0;
   width: 100%;
   height: 570px;
   overflow: auto;
   background-color: #fff;
+}
+.my-profile h4, h5, h6 {
+  margin: 0;
+}
+.my-profile > h6 {
+  margin-bottom: 5px;
 }
 .img-profile-toggle{
   cursor: pointer;
@@ -522,5 +645,53 @@ button.btn.btn-primary{
 }
 input#username{
   margin-top: -30px;
+}
+.container-popup>.popup{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+}
+.container-popup>.popup:hover{
+  background: #afbfeb;
+}
+.container-popup{
+  display: none;
+  right: 0;
+  top: 70px;
+  z-index: 99;
+  width: 70%;
+  padding: 20px 0;
+  color: white;
+  background: #7E98DF;
+  position: absolute;
+  border-radius: 35px 10px 35px 35px;
+}
+.icon-popup{
+  width: 45px;
+  margin-right: 10px;
+  text-align: center;
+}
+.container-add-contact{
+  background-color: white;
+  width: 100%;
+  height: 570px;
+  overflow: auto;
+  display: none;
+  position: absolute;
+  z-index: 2;
+}
+.add-friend, .unfriend{
+  width: 20px;
+  height: 20px;
+  cursor: pointer
+}
+.add-friend, .unfriend:hover{
+  transform: scale(1.08);
+}
+.add-friend > img, .unfriend > img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
 }
 </style>

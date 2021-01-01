@@ -11,6 +11,7 @@ export default new Vuex.Store({
     id: '' || localStorage.getItem('id'),
     token: '' || localStorage.getItem('token'),
     contact: [],
+    myFriend: [],
     historyChat: [],
     myProfile: {},
     profile: {}
@@ -22,6 +23,9 @@ export default new Vuex.Store({
     },
     GET_ALL_CONTACT (state, payload) {
       state.contact = payload
+    },
+    GET_ALL_FRIEND (state, payload) {
+      state.myFriend = payload
     },
     GET_PROFILE_USER (state, payload) {
       state.profile = payload
@@ -42,12 +46,37 @@ export default new Vuex.Store({
         axios.get(`${process.env.VUE_APP_SERVICE_API}/users/list-users`)
           .then((res) => {
             const result = res.data.result
-            console.log(result)
             context.commit('GET_ALL_CONTACT', result)
             resolve(result)
           })
           .catch((err) => {
             reject(err)
+          })
+      })
+    },
+    getAllFriend (context) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/friend-list`)
+          .then((res) => {
+            const result = res.data.result
+            context.commit('GET_ALL_FRIEND', result)
+            resolve(result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    addFriend (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${process.env.VUE_APP_SERVICE_API}/friend-list`, payload)
+          .then(res => {
+            const { result } = res.data
+            console.log(result)
+            resolve(result)
+          })
+          .catch(err => {
+            reject(err.response)
           })
       })
     },
@@ -94,6 +123,7 @@ export default new Vuex.Store({
     },
     historyChatPrivate (context, payload) {
       return new Promise((resolve, reject) => {
+        console.log(payload)
         axios.post(`${process.env.VUE_APP_SERVICE_API}/message/chat-private`, payload)
           .then(res => {
             const result = res.data.result
@@ -125,15 +155,27 @@ export default new Vuex.Store({
           })
       })
     },
-    logout (context) {
-      localStorage.clear()
-      context.commit('REMOVE_TOKEN')
-      Swal.fire(
-        'Logout Sucess!',
-        'See you again!',
-        'success'
-      )
-      router.push({ name: 'Auth' })
+    logout (context, payload) {
+      return new Promise((resolve, reject) => {
+        console.log('ini payloadnya', payload)
+        context.dispatch('updateMyProfile', payload)
+          .then((res) => {
+            localStorage.clear()
+            context.commit('REMOVE_TOKEN')
+            Swal.fire(
+              'Logout Sucess!',
+              'See you again!',
+              'success'
+            )
+            router.push({ name: 'Auth' })
+            resolve(res)
+          })
+          .catch((err) => {
+            console.log('ada kesalahan di vuex logout')
+            console.log(err.response)
+            reject(err)
+          })
+      })
     },
     signup (context, payload) {
       return new Promise((resolve, reject) => {
@@ -182,6 +224,9 @@ export default new Vuex.Store({
   getters: {
     allContact (state) {
       return state.contact
+    },
+    allFriend (state) {
+      return state.myFriend
     },
     profileUser (state) {
       return state.profile
