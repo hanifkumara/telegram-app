@@ -43,6 +43,8 @@
 <script>
 import { mapActions } from 'vuex'
 import showPass from '../../mixins/showPassword'
+import Swal from 'sweetalert2'
+
 export default {
   name: 'Register',
   data () {
@@ -56,18 +58,66 @@ export default {
   methods: {
     ...mapActions(['signup']),
     handleSignup () {
-      const payload = {
-        name: this.name,
-        email: this.email,
-        password: this.password
+      if (!this.name) {
+        Swal.fire(
+          'Fill name required!',
+          '',
+          'error'
+        )
+        return
       }
-      this.signup(payload)
-        .then((result) => {
-          console.log(result)
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      if (this.name.length <= 7) {
+        Swal.fire(
+          'length name must be more than 7 char',
+          '',
+          'error'
+        )
+        return
+      }
+      if (!this.email) {
+        Swal.fire(
+          'Fill email required!',
+          '',
+          'error'
+        )
+        return
+      }
+      if (!this.email.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)) {
+        Swal.fire(
+          'Format email invalid',
+          '',
+          'error'
+        )
+        return
+      }
+      if (!this.password) {
+        Swal.fire(
+          'Fill password required!',
+          '',
+          'error'
+        )
+        return
+      }
+      if (this.name.length <= 5) {
+        Swal.fire(
+          'length password must be more than 5 char',
+          '',
+          'error'
+        )
+      } else {
+        const payload = {
+          name: this.name,
+          email: this.email,
+          password: this.password
+        }
+        this.signup(payload)
+          .then((result) => {
+            console.log(result)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      }
     },
     toLogin () {
       this.$router.push({ name: 'Login' })

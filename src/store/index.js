@@ -41,9 +41,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    getAllContact (context) {
+    getAllContact (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.get(`${process.env.VUE_APP_SERVICE_API}/users/list-users`)
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/users/list-users?name=${payload.name}`)
           .then((res) => {
             const result = res.data.result
             context.commit('GET_ALL_CONTACT', result)
@@ -54,9 +54,9 @@ export default new Vuex.Store({
           })
       })
     },
-    getAllFriend (context) {
+    getAllFriend (context, payload) {
       return new Promise((resolve, reject) => {
-        axios.get(`${process.env.VUE_APP_SERVICE_API}/friend-list`)
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/friend-list?name=${payload.name}`)
           .then((res) => {
             const result = res.data.result
             context.commit('GET_ALL_FRIEND', result)

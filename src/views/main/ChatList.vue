@@ -168,7 +168,7 @@ export default {
 }
 .content-chat {
   height: 480px;
-  background-color: #f1ebeb;
+  background: #f7f5f5;
   overflow: scroll;
   padding: 8px 10px;
 }
@@ -185,7 +185,7 @@ export default {
   border-radius: 10px;
   padding: 8px 30px;
   padding-right: 15%;
-  background: #FAFAFA;
+  background: #f7f5f5;
 }
 .input-chat>input:focus{
   outline: none;
@@ -227,7 +227,7 @@ export default {
 }
 .card-message-left{
   width: fit-content;
-  background-color: rgb(182, 182, 248);
+  background-color: rgb(166, 166, 245);
   color: white;
   padding: 8px 30px;
   margin-left: 10px;

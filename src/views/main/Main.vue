@@ -16,12 +16,12 @@
               </div>
               <h6>Settings</h6>
             </div>
-            <div class="popup contacts">
+            <!-- <div class="popup contacts">
               <div class="icon-popup">
                 <img src="@/assets/img/Contacts.png" alt="icon-contact">
               </div>
               <h6>Contacts</h6>
-            </div>
+            </div> -->
             <div class="popup calls">
               <div class="icon-popup">
                 <img src="@/assets/img/Vector.png" alt="icon-calls">
@@ -106,7 +106,6 @@
               </div>
               <h6 class="mt-2">My Location</h6>
               <b-modal size="xl" title="My Location" hide-footer v-model="modalShow2">
-                <div>
                 <l-map
                   :zoom="zoom"
                   :center="center"
@@ -118,13 +117,16 @@
                 />
                 <l-marker :lat-lng="markerLatLng" ></l-marker>
                 </l-map>
-                </div>
               </b-modal>
             </div>
             <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
           </div>
           <div class="container-add-contact" ref="addContact">
-            <h4>Ini semua username</h4>
+            <div class="title-add-contact">
+              <h4 style="padding-top: 20px;">All users TelegramApp</h4>
+              <input type="text" placeholder="Search users name . . ." v-model="searchUser" class="form-control">
+            </div>
+            <hr>
             <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
               <div class="card-left d-flex">
                 <div class="photo">
@@ -132,8 +134,8 @@
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.name}}</h5>
-                  <p v-if="!data.biodata">Hey there! I am using TelegramApp</p>
-                  <p>{{data.biodata}}</p>
+                  <p v-if="!data.username">{{data.email}}</p>
+                  <p>{{data.username}}</p>
                 </div>
               </div>
               <div class="time-chat">
@@ -149,7 +151,7 @@
             </div>
           </div>
           <div class="input-search my-3 d-flex justify-content-between align-items-center">
-            <input type="text" placeholder="Search user">
+            <input type="text" placeholder="Search user" v-model="searchFriendChat">
             <img src="@/assets/img/Search.png" alt="icon-search">
             <div class="icon-plus">
               <img src="@/assets/img/Plus.png" alt="icon-plus">
@@ -167,8 +169,8 @@
             </div>
           </div>
           <div class="container-contact">
-            <div v-if="allFriend.length < 1">
-              <h2>Bsimillah</h2>
+            <div  class="display-default" v-if="allFriend.length < 1">
+              <h2>You don't have chat friend yet. Please add friends in the invite friend menu</h2>
             </div>
             <div class="d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
               <div class="card-left d-flex" @click="handleProfileUser(data.friendId)">
@@ -226,7 +228,9 @@ export default {
       editUsername: false,
       editPhone: false,
       editBiodata: false,
-      idFriend: ''
+      idFriend: '',
+      searchUser: '',
+      searchFriendChat: ''
     }
   },
   components: {
@@ -241,7 +245,7 @@ export default {
       const addContact = this.$refs.addContact
       myProfile.style.display = 'none'
       addContact.style.display = 'none'
-      this.getAllFriend()
+      this.getAllFriend({ name: '' })
     },
     handleLogout () {
       const data = {
@@ -271,7 +275,14 @@ export default {
         handle.style.display = 'none'
       }
     },
+    handleSearchUser () {
+      this.getAllContact({ name: this.searchUser })
+    },
+    handleSearchFriendChat () {
+      this.getAllFriend({ name: this.searchFriendChat })
+    },
     handleAddContact () {
+      this.getAllContact({ name: '' })
       const handle = this.$refs.addContact
       if (handle.style.display === 'none') {
         handle.style.display = 'block'
@@ -287,7 +298,6 @@ export default {
             `${result.message === 'Unfriend success' ? 'Now you cant send message to this friend' : ''}`,
             'success'
           )
-          console.log('ini result add friend', result)
         }).catch((err) => {
           console.log(err)
         })
@@ -298,9 +308,6 @@ export default {
         idReceiver: id
       }
       this.historyChatPrivate(payload)
-        .then(res => {
-          console.log(res)
-        })
       this.getProfileUser(id)
         .then((result) => {
           const resData = result[0]
@@ -335,7 +342,6 @@ export default {
             '',
             'error'
           )
-          console.log(err)
         })
     },
     handleUsername () {
@@ -394,9 +400,7 @@ export default {
     const sender = localStorage.getItem('id')
     const receiver = this.idFriend
     this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })
-    this.getAllContact()
     this.getMyProfile()
-    console.log(this.myProfile)
     this.$getLocation()
       .then(coordinates => {
         this.center = latLng(coordinates.lat, coordinates.lng)
@@ -404,7 +408,7 @@ export default {
         console.log(coordinates)
       })
     this.socket.emit('handleStatus', this.myId)
-    this.getAllFriend()
+    this.getAllFriend({ name: '' })
   },
   computed: {
     ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend']),
@@ -421,6 +425,12 @@ export default {
       this.myProfile.phoneNumber = this.value
       this.myProfile.username = this.value
       this.myProfile.biodata = this.value
+    },
+    searchUser: function () {
+      this.handleSearchUser()
+    },
+    searchFriendChat: function () {
+      this.handleSearchFriendChat()
     }
   },
   directives: {
@@ -673,6 +683,7 @@ input#username{
   text-align: center;
 }
 .container-add-contact{
+  overflow: auto;
   background-color: white;
   width: 100%;
   height: 570px;
@@ -693,5 +704,13 @@ input#username{
   object-fit: contain;
   width: 100%;
   height: 100%;
+}
+.display-default{
+  height: 100%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  font-size: 35px;
+  color: rgb(180, 173, 173);
 }
 </style>
