@@ -188,7 +188,7 @@
       </div>
       <div class="col-md-8">
         <div class="content-right">
-          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory"/>
+          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory" :detail-group="detailGroup" :short-detail="shortDetail"/>
         </div>
       </div>
     </div>
@@ -230,7 +230,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup']),
     toHome () {
       const myProfile = this.$refs.myProfile
       const addContact = this.$refs.addContact
@@ -391,6 +391,8 @@ export default {
       console.log('ini idroom', idRoom)
       this.idRoom = idRoom
       this.$router.push({ name: 'ChatRoom' }).catch(() => {})
+      this.getDetailGroup({ idRoom })
+      this.historyChatRoom({ idRoom })
     }
   },
   mounted () {
@@ -409,7 +411,7 @@ export default {
     this.getGroupChat()
   },
   computed: {
-    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend', 'allGroupChat', 'chatRoomHistory']),
+    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend', 'allGroupChat', 'chatRoomHistory', 'detailGroup', 'shortDetail']),
     handleIconUnfriend () {
       const data = this.allFriend
       const result = data.filter((value, index) => {

@@ -15,8 +15,10 @@ export default new Vuex.Store({
     historyChat: [],
     historyRoomChat: [],
     groupChat: [],
+    groupDetail: [],
     myProfile: {},
-    profile: {}
+    profile: {},
+    detailShort: {}
   },
   mutations: {
     SET_AUTH (state, payload) {
@@ -43,6 +45,12 @@ export default new Vuex.Store({
     },
     SET_HISTORY_ROOM (state, payload) {
       state.historyRoomChat = payload
+    },
+    GET_DETAIL_GROUP (state, payload) {
+      state.groupDetail = payload
+    },
+    SHORT_DETAIL_GROUP (state, payload) {
+      state.detailShort = payload
     },
     REMOVE_TOKEN (state) {
       state.token = null
@@ -80,8 +88,26 @@ export default new Vuex.Store({
         axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/group-chat`)
           .then((res) => {
             const result = res.data.result
-            console.log(result)
             context.commit('GET_GROUP_CHAT', result)
+            resolve(result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    getDetailGroup (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/detail-group?idRoom=${payload.idRoom}`)
+          .then((res) => {
+            const result = res.data.result
+            console.log('ini detail', result)
+            const shortDetail = {
+              count: result.length,
+              titleGroup: result[0].nameRoom
+            }
+            context.commit('SHORT_DETAIL_GROUP', shortDetail)
+            context.commit('GET_DETAIL_GROUP', result)
             resolve(result)
           })
           .catch((err) => {
@@ -94,7 +120,6 @@ export default new Vuex.Store({
         axios.post(`${process.env.VUE_APP_SERVICE_API}/friend-list`, payload)
           .then(res => {
             const { result } = res.data
-            console.log(result)
             resolve(result)
           })
           .catch(err => {
@@ -130,22 +155,18 @@ export default new Vuex.Store({
     },
     updateMyProfile (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log(payload)
         axios.patch(`${process.env.VUE_APP_SERVICE_API}/users`, payload)
           .then(res => {
             const { result } = res.data
-            console.log('ini result update', result)
             resolve(result)
           })
           .catch(err => {
-            console.log(err.response.data)
             reject(err.response.data.err.message)
           })
       })
     },
     historyChatPrivate (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log(payload)
         axios.post(`${process.env.VUE_APP_SERVICE_API}/message/chat-private`, payload)
           .then(res => {
             const result = res.data.result
@@ -159,11 +180,9 @@ export default new Vuex.Store({
     },
     historyChatRoom (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log(payload)
         axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/chat-room?idRoom=${payload.idRoom}`)
           .then(res => {
             const result = res.data.result
-            console.log(result)
             context.commit('SET_HISTORY_ROOM', result)
             resolve(result)
           })
@@ -174,7 +193,6 @@ export default new Vuex.Store({
     },
     login (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log(payload)
         axios.post(`${process.env.VUE_APP_SERVICE_API}/auth/login`, payload)
           .then(res => {
             const { result } = res.data
@@ -194,7 +212,6 @@ export default new Vuex.Store({
     },
     logout (context, payload) {
       return new Promise((resolve, reject) => {
-        console.log('ini payloadnya', payload)
         context.dispatch('updateMyProfile', payload)
           .then((res) => {
             localStorage.clear()
@@ -208,8 +225,6 @@ export default new Vuex.Store({
             resolve(res)
           })
           .catch((err) => {
-            console.log('ada kesalahan di vuex logout')
-            console.log(err.response)
             reject(err)
           })
       })
@@ -279,6 +294,12 @@ export default new Vuex.Store({
     },
     chatRoomHistory (state) {
       return state.historyRoomChat
+    },
+    detailGroup (state) {
+      return state.groupDetail
+    },
+    shortDetail (state) {
+      return state.detailShort
     },
     isLogin (state) {
       return state.token !== null
