@@ -9,6 +9,7 @@ import Room from '../views/room/Room.vue'
 import MapPage from '../views/map/Map.vue'
 import Map2 from '../views/map/Map2.vue'
 import ChatList from '../views/main/ChatList.vue'
+import ChatRoom from '../views/main/ChatRoom.vue'
 import LoginDev from '../views/login/LoginDev.vue'
 import store from '../store/index'
 import Swal from 'sweetalert2'
@@ -63,13 +64,17 @@ const routes = [
     path: '/main',
     name: 'Main',
     component: Main,
-    redirect: '/main/chat-list',
     meta: { requiresAuth: true },
     children: [
       {
         path: 'chat-list',
         name: 'ChatList',
         component: ChatList
+      },
+      {
+        path: 'chat-room',
+        name: 'ChatRoom',
+        component: ChatRoom
       }
     ]
   },

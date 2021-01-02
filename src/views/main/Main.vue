@@ -298,6 +298,7 @@ export default {
       const payload = {
         idReceiver: id
       }
+      this.$router.push({ name: 'ChatList' }).catch(() => {})
       this.historyChatPrivate(payload)
       this.getProfileUser(id)
         .then((result) => {
@@ -389,6 +390,7 @@ export default {
     handleDataGroup (idRoom) {
       console.log('ini idroom', idRoom)
       this.idRoom = idRoom
+      this.$router.push({ name: 'ChatRoom' }).catch(() => {})
     }
   },
   mounted () {
