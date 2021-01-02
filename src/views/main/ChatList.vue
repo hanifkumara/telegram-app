@@ -79,7 +79,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-
 export default {
   name: 'ChatList',
   props: ['data-profile', 'socket', 'my-profile', 'id-friend'],

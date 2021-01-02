@@ -99,26 +99,19 @@
             <h6 v-if="!myProfile.biodata" @click="editBiodata = true;">Please add your Biodata</h6>
             <h6 style="color: #848484;">Bio</h6>
             <hr style="margin: 12px 0;">
-            <h6>Settings</h6>
-            <div class="my-location d-flex align-items-center" @click="modalShow2 = !modalShow2">
-              <div class="icon-maps">
-                <img src="@/assets/img/icons8-map-marker-100.png" alt="icon-maps">
-              </div>
-              <h6 class="mt-2">My Location</h6>
-              <b-modal size="xl" title="My Location" hide-footer v-model="modalShow2">
-                <l-map
-                  :zoom="zoom"
-                  :center="center"
-                  style="height: 500px; width: 100%"
+            <h6>My Location</h6>
+                <GmapMap
+                  :center="{lat:location.lat, lng:location.lng}"
+                  :zoom="7"
+                  map-type-id="terrain"
+                  style="width: 100%; height: 300px"
                 >
-                <l-tile-layer
-                  :url="url"
-                  :attribution="attribution"
-                />
-                <l-marker :lat-lng="markerLatLng" ></l-marker>
-                </l-map>
-              </b-modal>
-            </div>
+                  <GmapMarker
+                    :position="{lat:location.lat, lng:location.lng}"
+                    :clickable="true"
+                    :draggable="true"
+                  />
+                </GmapMap>
             <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
           </div>
           <div class="container-add-contact" ref="addContact">
@@ -187,12 +180,15 @@
                 <div class="count-new-chat">2</div>
               </div>
             </div>
+            <div v-for="data in allGroupChat" :key="data.id">
+              <p @click="handleDataGroup(data.idRoom)">{{data.nameRoom}}</p>
+            </div>
           </div>
         </div>
       </div>
       <div class="col-md-8">
         <div class="content-right">
-          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend"/>
+          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory"/>
         </div>
       </div>
     </div>
@@ -202,8 +198,6 @@
 <script>
 import io from 'socket.io-client'
 import { mapActions, mapGetters } from 'vuex'
-import { latLng } from 'leaflet'
-import { LMap, LTileLayer, LMarker } from 'vue2-leaflet'
 import Swal from 'sweetalert2'
 
 export default {
@@ -217,10 +211,7 @@ export default {
       modalShow: false,
       modalShow2: false,
       zoom: 13,
-      center: latLng(0, 0),
       url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      markerLatLng: [0, 0],
       image: null,
       phoneNumber: '',
       username: '',
@@ -230,16 +221,16 @@ export default {
       editBiodata: false,
       idFriend: '',
       searchUser: '',
-      searchFriendChat: ''
+      searchFriendChat: '',
+      location: {
+        lat: 0,
+        lng: 0
+      },
+      idRoom: ''
     }
   },
-  components: {
-    LMap,
-    LTileLayer,
-    LMarker
-  },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom']),
     toHome () {
       const myProfile = this.$refs.myProfile
       const addContact = this.$refs.addContact
@@ -394,6 +385,10 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    handleDataGroup (idRoom) {
+      console.log('ini idroom', idRoom)
+      this.idRoom = idRoom
     }
   },
   mounted () {
@@ -403,15 +398,16 @@ export default {
     this.getMyProfile()
     this.$getLocation()
       .then(coordinates => {
-        this.center = latLng(coordinates.lat, coordinates.lng)
-        this.markerLatLng = [coordinates.lat, coordinates.lng]
+        this.location.lat = coordinates.lat
+        this.location.lng = coordinates.lng
         console.log(coordinates)
       })
     this.socket.emit('handleStatus', this.myId)
     this.getAllFriend({ name: '' })
+    this.getGroupChat()
   },
   computed: {
-    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend']),
+    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend', 'allGroupChat', 'chatRoomHistory']),
     handleIconUnfriend () {
       const data = this.allFriend
       const result = data.filter((value, index) => {

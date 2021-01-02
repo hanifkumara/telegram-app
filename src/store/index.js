@@ -13,6 +13,8 @@ export default new Vuex.Store({
     contact: [],
     myFriend: [],
     historyChat: [],
+    historyRoomChat: [],
+    groupChat: [],
     myProfile: {},
     profile: {}
   },
@@ -27,6 +29,9 @@ export default new Vuex.Store({
     GET_ALL_FRIEND (state, payload) {
       state.myFriend = payload
     },
+    GET_GROUP_CHAT (state, payload) {
+      state.groupChat = payload
+    },
     GET_PROFILE_USER (state, payload) {
       state.profile = payload
     },
@@ -35,6 +40,9 @@ export default new Vuex.Store({
     },
     SET_HISTORY_PRIVATE (state, payload) {
       state.historyChat = payload
+    },
+    SET_HISTORY_ROOM (state, payload) {
+      state.historyRoomChat = payload
     },
     REMOVE_TOKEN (state) {
       state.token = null
@@ -60,6 +68,20 @@ export default new Vuex.Store({
           .then((res) => {
             const result = res.data.result
             context.commit('GET_ALL_FRIEND', result)
+            resolve(result)
+          })
+          .catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    getGroupChat (context) {
+      return new Promise((resolve, reject) => {
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/group-chat`)
+          .then((res) => {
+            const result = res.data.result
+            console.log(result)
+            context.commit('GET_GROUP_CHAT', result)
             resolve(result)
           })
           .catch((err) => {
@@ -128,6 +150,21 @@ export default new Vuex.Store({
           .then(res => {
             const result = res.data.result
             context.commit('SET_HISTORY_PRIVATE', result)
+            resolve(result)
+          })
+          .catch(err => {
+            reject(err.response)
+          })
+      })
+    },
+    historyChatRoom (context, payload) {
+      return new Promise((resolve, reject) => {
+        console.log(payload)
+        axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/chat-room?idRoom=${payload.idRoom}`)
+          .then(res => {
+            const result = res.data.result
+            console.log(result)
+            context.commit('SET_HISTORY_ROOM', result)
             resolve(result)
           })
           .catch(err => {
@@ -231,11 +268,17 @@ export default new Vuex.Store({
     profileUser (state) {
       return state.profile
     },
+    allGroupChat (state) {
+      return state.groupChat
+    },
     myProfile (state) {
       return state.myProfile
     },
     chatHistory (state) {
       return state.historyChat
+    },
+    chatRoomHistory (state) {
+      return state.historyRoomChat
     },
     isLogin (state) {
       return state.token !== null
