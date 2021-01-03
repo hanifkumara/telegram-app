@@ -17,6 +17,27 @@
         <div class="icon-profile" v-b-modal.modal-1>
           <img src="@/assets/img/Profile menu.png" alt="icon-profile">
         </div>
+        <b-modal id="modal-1" :title="shortDetail.titleGroup" ok-only>
+            <div class="my-2 content-modal">
+              <div class="photo-chat mb-3">
+                <img v-if="shortDetail.titleGroup === 'Web 5'" src="@/assets/img/pp.jpg" alt="photo-profile">
+                <img v-if="shortDetail.titleGroup === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="photo-profile">
+              </div>
+              <hr>
+              <h4>{{shortDetail.count}} member</h4>
+              <div class="detail-user-join d-flex" v-for="data in detailGroup" :key="data.id">
+                <div class="detail-photo">
+                  <img :src="data.photoMember" alt="Photo Member">
+                </div>
+                <div class="name-phone ml-2">
+                  <h5 v-if="data.idUser === idLogin">You</h5>
+                  <h5 v-else>{{data.nameMember}}</h5>
+                  <h6 v-if="data.phoneMember">{{data.phoneMember}}</h6>
+                  <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
+                </div>
+              </div>
+            </div>
+          </b-modal>
       </div>
     </div>
     <div class="content-chat" ref="messageBody">
@@ -61,7 +82,7 @@ export default {
     handleEmit () {
       const idRoom = this.idRoom
       const idUser = this.idLogin
-      this.socket.emit('messageRoom', { idUser, idRoom, message: this.inputMessage })
+      this.socket.emit('messageRoom', { idUser, idRoom, message: this.inputMessage, nameRoom: this.shortDetail.titleGroup })
       this.inputMessage = ''
     },
     handleHistoryRoom () {
@@ -77,13 +98,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['short-detail', 'chatRoomHistory'])
+    ...mapGetters(['chatRoomHistory'])
   },
   mounted () {
     console.log('hai')
     this.socket.on('sendBackRoom', data => {
       if (data.notif) {
-        this.$toasted.show('Anda menerima pesan dari Grup', {
+        this.$toasted.show(`Anda menerima pesan dari Grup ${data.nameRoom}`, {
           type: 'info',
           duration: 3000,
           keepOnHover: true
@@ -178,9 +199,28 @@ export default {
 }
 .chat-left > p{
   margin: 0;
-  color: rgb(129, 131, 128);
+  color: blue;
 }
 ::-webkit-scrollbar {
   width: 2px;
+}
+.icon-profile:focus{
+  outline: none;
+}
+.detail-photo{
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+}
+.detail-photo > img {
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
+}
+.content-modal > .photo-chat {
+  display: flex;
+  margin: auto;
+  width: 400px;
+  height: 400px;
 }
 </style>

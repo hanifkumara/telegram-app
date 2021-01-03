@@ -115,6 +115,11 @@ export default {
             console.log(result)
           })
           .catch((err) => {
+            Swal.fire(
+              err.message,
+              '',
+              'error'
+            )
             console.log(err)
           })
       }

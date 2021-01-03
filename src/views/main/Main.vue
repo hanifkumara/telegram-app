@@ -16,12 +16,12 @@
               </div>
               <h6>Settings</h6>
             </div>
-            <!-- <div class="popup contacts">
+            <div class="popup contacts" @click="handleMyContact">
               <div class="icon-popup">
                 <img src="@/assets/img/Contacts.png" alt="icon-contact">
               </div>
               <h6>Contacts</h6>
-            </div> -->
+            </div>
             <div class="popup calls">
               <div class="icon-popup">
                 <img src="@/assets/img/Vector.png" alt="icon-calls">
@@ -114,6 +114,25 @@
                 </GmapMap>
             <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
           </div>
+          <div class="my-contact" ref="myContact">
+            <div class="d-flex justify-content-between mt-3" v-for="data in allFriend" :key="data.id">
+              <div class="card-left d-flex">
+                <div class="photo">
+                  <img :src="data.friendPhoto" alt="photo-friend">
+                </div>
+                <div class="name-chat mx-2">
+                  <h5>{{data.friendName}}</h5>
+                </div>
+              </div>
+              <div class="time-chat">
+                <div @click="handleInvite(data.friendId)">
+                  <div class="unfriend">
+                    <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="container-add-contact" ref="addContact">
             <div class="title-add-contact">
               <h4 style="padding-top: 20px;">All users TelegramApp</h4>
@@ -133,10 +152,7 @@
               </div>
               <div class="time-chat">
                 <div @click="handleInvite(data.id)">
-                  <div class="unfriend" v-if="handleIconUnfriend === data.id">
-                    <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
-                  </div>
-                  <div class="add-friend" v-else >
+                  <div class="add-friend">
                     <img src="@/assets/img/icons8-add-user-group-man-man-50.png" alt="add-friend">
                   </div>
                 </div>
@@ -180,8 +196,21 @@
                 <div class="count-new-chat">2</div>
               </div>
             </div>
-            <div v-for="data in allGroupChat" :key="data.id">
-              <p @click="handleDataGroup(data.idRoom)">{{data.nameRoom}}</p>
+            <div class="list-room" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
+              <div class="room-left d-flex">
+                <div class="icon-room">
+                  <img v-if="data.nameRoom === 'Web 5'" src="@/assets/img/pp.jpg" alt="Web 5">
+                  <img v-if="data.nameRoom === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="Picnic Schedule">
+                </div>
+                <div class="room-name ml-2">
+                  <h5>{{data.nameRoom}}</h5>
+                  <p>chat group</p>
+                </div>
+              </div>
+              <div class="time-chat">
+                <h6>5.30</h6>
+                <div class="count-new-chat">2</div>
+              </div>
             </div>
           </div>
         </div>
@@ -234,8 +263,10 @@ export default {
     toHome () {
       const myProfile = this.$refs.myProfile
       const addContact = this.$refs.addContact
+      const myContact = this.$refs.myContact
       myProfile.style.display = 'none'
       addContact.style.display = 'none'
+      myContact.style.display = 'none'
       this.getAllFriend({ name: '' })
     },
     handleLogout () {
@@ -272,6 +303,14 @@ export default {
     handleSearchFriendChat () {
       this.getAllFriend({ name: this.searchFriendChat })
     },
+    handleMyContact () {
+      const handle = this.$refs.myContact
+      if (handle.style.display === 'none') {
+        handle.style.display = 'block'
+      } else {
+        handle.style.display = 'none'
+      }
+    },
     handleAddContact () {
       this.getAllContact({ name: '' })
       const handle = this.$refs.addContact
@@ -282,13 +321,18 @@ export default {
       }
     },
     handleInvite (id) {
+      console.log('ini id nya', id)
       this.addFriend({ friendId: id })
         .then((result) => {
+          console.log(result)
           Swal.fire(
             result.message,
             `${result.message === 'Unfriend success' ? 'Now you cant send message to this friend' : ''}`,
             'success'
           )
+          if (result.message === 'Unfriend success') {
+            this.getAllFriend({ name: '' })
+          }
         }).catch((err) => {
           console.log(err)
         })
@@ -390,7 +434,7 @@ export default {
     handleDataGroup (idRoom) {
       console.log('ini idroom', idRoom)
       this.idRoom = idRoom
-      this.socket.emit('initialRoom', this.myId)
+      this.socket.emit('initialRoom', idRoom)
       this.getDetailGroup({ idRoom })
       this.historyChatRoom({ idRoom })
       this.$router.push({ name: 'ChatRoom' }).catch(() => {})
@@ -713,5 +757,33 @@ input#username{
   align-items: center;
   font-size: 35px;
   color: rgb(180, 173, 173);
+}
+.icon-room{
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+}
+.icon-room > img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+
+}
+.list-room{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.my-contact{
+  display: none;
+  position: absolute;
+  left: -1px;
+  top: 80px;
+  width: 100%;
+  z-index: 2;
+  overflow: auto;
+  height: 550px;
+  background-color: #fff;
 }
 </style>
