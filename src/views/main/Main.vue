@@ -162,7 +162,7 @@
             </div>
           </div>
           <div class="container-contact">
-            <div  class="display-default" v-if="allFriend.length < 1">
+            <div  class="display-default" v-if="allFriend.length < 1 && allGroupChat.length < 1">
               <h2>You don't have chat friend yet. Please add friends in the invite friend menu</h2>
             </div>
             <div class="d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
@@ -390,9 +390,10 @@ export default {
     handleDataGroup (idRoom) {
       console.log('ini idroom', idRoom)
       this.idRoom = idRoom
-      this.$router.push({ name: 'ChatRoom' }).catch(() => {})
+      this.socket.emit('initialRoom', this.myId)
       this.getDetailGroup({ idRoom })
       this.historyChatRoom({ idRoom })
+      this.$router.push({ name: 'ChatRoom' }).catch(() => {})
     }
   },
   mounted () {

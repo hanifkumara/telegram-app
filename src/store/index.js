@@ -180,9 +180,11 @@ export default new Vuex.Store({
     },
     historyChatRoom (context, payload) {
       return new Promise((resolve, reject) => {
+        console.log('ini payload', payload)
         axios.get(`${process.env.VUE_APP_SERVICE_API}/message-room/chat-room?idRoom=${payload.idRoom}`)
           .then(res => {
             const result = res.data.result
+            console.log(res.data.result)
             context.commit('SET_HISTORY_ROOM', result)
             resolve(result)
           })

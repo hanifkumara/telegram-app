@@ -95,7 +95,7 @@ export default {
               '',
               'success'
             )
-            this.$router.push({ name: 'ChatList' })
+            this.$router.push({ name: 'Main' })
           })
           .catch((err) => {
             let message = ''
