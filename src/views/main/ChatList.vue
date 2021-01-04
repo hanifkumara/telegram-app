@@ -33,6 +33,19 @@
               <hr>
               <h4 style="font-weight: 600; font-size: 20px;">{{dataProfile.biodata}}</h4>
               <label for="">Bio</label>
+              <h4>location</h4>
+              <GmapMap
+                  :center="{lat:dataProfile.locationLat, lng:dataProfile.locationLng}"
+                  :zoom="7"
+                  map-type-id="terrain"
+                  style="width: 100%; height: 300px"
+                >
+                  <GmapMarker
+                    :position="{lat:dataProfile.locationLat, lng:dataProfile.locationLng}"
+                    :clickable="true"
+                    :draggable="true"
+                  />
+                </GmapMap>
             </div>
           </b-modal>
       </div>
@@ -86,7 +99,11 @@ export default {
     return {
       inputMessage: '',
       idLogin: localStorage.getItem('id'),
-      status: ''
+      status: '',
+      location: {
+        lat: this.dataProfile.locationLat,
+        lng: this.dataProfile.locationLng
+      }
     }
   },
   methods: {

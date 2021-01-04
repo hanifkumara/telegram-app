@@ -40,6 +40,11 @@
               </div>
               <h6>Invite Friend</h6>
             </div>
+            <div class="popup" @click="handleGroup">
+              <div class="icon-popup">
+              </div>
+              <h6>Group</h6>
+            </div>
             <div class="popup telegram-faq">
               <div class="icon-popup">
                 <img src="@/assets/img/FAQ.png" alt="icon telegram-faq">
@@ -124,14 +129,28 @@
                   <h5>{{data.friendName}}</h5>
                 </div>
               </div>
-              <div class="time-chat">
-                <div @click="handleInvite(data.friendId)">
-                  <div class="unfriend">
-                    <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
-                  </div>
+              <div class="time-chat d-flex">
+                <div class="mr-4">
+                  <b-dropdown class="invite-group m-md-2" id="dropdown-1" >
+                    <b-dropdown-item v-for="dataGroup in allGroupChat" :key="dataGroup.id" @click="handleInviteGroup(dataGroup.idRoom, data.friendId)">{{dataGroup.nameRoom}}</b-dropdown-item>
+                  </b-dropdown>
                 </div>
-              </div>
+                <!-- <b-dropdown id="dropdown-1" text="Dropdown Button" class="m-md-2">
+                  <b-dropdown-item>First Action</b-dropdown-item>
+                  <b-dropdown-item>Second Action</b-dropdown-item>
+                  <b-dropdown-item>Third Action</b-dropdown-item>
+                  <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-item active>Active action</b-dropdown-item>
+                  <b-dropdown-item disabled>Disabled action</b-dropdown-item>
+                </b-dropdown> -->
+                <div class="unfriend" @click="handleInvite(data.friendId)">
+                  <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
+                </div>
             </div>
+            </div>
+          </div>
+          <div class="container-group" ref="group">
+            <h5>Hello nif</h5>
           </div>
           <div class="container-add-contact" ref="addContact">
             <div class="title-add-contact">
@@ -201,6 +220,7 @@
                 <div class="icon-room">
                   <img v-if="data.nameRoom === 'Web 5'" src="@/assets/img/pp.jpg" alt="Web 5">
                   <img v-if="data.nameRoom === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="Picnic Schedule">
+                  <img v-else :src="data.photoRoom" alt="Image Room">
                 </div>
                 <div class="room-name ml-2">
                   <h5>{{data.nameRoom}}</h5>
@@ -259,7 +279,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup']),
     toHome () {
       const myProfile = this.$refs.myProfile
       const addContact = this.$refs.addContact
@@ -319,6 +339,29 @@ export default {
       } else {
         handle.style.display = 'none'
       }
+    },
+    handleGroup () {
+      const handle = this.$refs.group
+      if (handle.style.display === 'none') {
+        handle.style.display = 'block'
+      } else {
+        handle.style.display = 'none'
+      }
+    },
+    handleInviteGroup (idRoom, idUser) {
+      console.log('ini id roomnya', idRoom)
+      console.log('ini id user', idUser)
+      const payload = {
+        idRoom,
+        idUser
+      }
+      this.addMemberGroup(payload)
+        .then((result) => {
+          console.log(result)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     handleInvite (id) {
       console.log('ini id nya', id)
@@ -449,7 +492,18 @@ export default {
       .then(coordinates => {
         this.location.lat = coordinates.lat
         this.location.lng = coordinates.lng
-        console.log(coordinates)
+        const data = {
+          locationLat: coordinates.lat,
+          locationLng: coordinates.lng
+        }
+        this.updateMyProfile(data)
+          .then((result) => {
+            console.log(result)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        console.log(typeof data.locationLat)
       })
     this.socket.emit('handleStatus', this.myId)
     this.getAllFriend({ name: '' })
@@ -737,15 +791,15 @@ input#username{
   position: absolute;
   z-index: 2;
 }
-.add-friend, .unfriend{
+.add-friend, .unfriend, .invite-group{
   width: 20px;
   height: 20px;
   cursor: pointer
 }
-.add-friend, .unfriend:hover{
+.add-friend, .invite-group, .unfriend:hover{
   transform: scale(1.08);
 }
-.add-friend > img, .unfriend > img {
+.add-friend > img, .unfriend > img, .invite-group > img {
   object-fit: contain;
   width: 100%;
   height: 100%;
@@ -779,6 +833,17 @@ input#username{
   display: none;
   position: absolute;
   left: -1px;
+  top: 80px;
+  width: 100%;
+  z-index: 2;
+  overflow: auto;
+  height: 550px;
+  background-color: #fff;
+}
+.container-group{
+  display: none;
+  position: absolute;
+  left: 0;
   top: 80px;
   width: 100%;
   z-index: 2;

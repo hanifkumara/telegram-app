@@ -25,15 +25,20 @@
               </div>
               <hr>
               <h4>{{shortDetail.count}} member</h4>
-              <div class="detail-user-join d-flex" v-for="data in detailGroup" :key="data.id">
-                <div class="detail-photo">
-                  <img :src="data.photoMember" alt="Photo Member">
+              <div class="detail-user-join d-flex justify-content-between" v-for="data in detailGroup" :key="data.id">
+                <div class="left-detail d-flex">
+                  <div class="detail-photo">
+                    <img :src="data.photoMember" alt="Photo Member">
+                  </div>
+                  <div class="name-phone ml-2">
+                    <h5 v-if="data.idUser === idLogin">You</h5>
+                    <h5 v-else>{{data.nameMember}}</h5>
+                    <h6 v-if="data.phoneMember">{{data.phoneMember}}</h6>
+                    <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
+                  </div>
                 </div>
-                <div class="name-phone ml-2">
-                  <h5 v-if="data.idUser === idLogin">You</h5>
-                  <h5 v-else>{{data.nameMember}}</h5>
-                  <h6 v-if="data.phoneMember">{{data.phoneMember}}</h6>
-                  <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
+                <div class="delete-member" @click="handleDeleteMember(idRoom, data.idUser)">
+                  delete
                 </div>
               </div>
             </div>
@@ -68,6 +73,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Swal from 'sweetalert2'
+
 export default {
   name: 'ChatRoom',
   data () {
@@ -78,7 +85,7 @@ export default {
   },
   props: ['socket', 'id-room', 'chat-room', 'detail-group', 'short-detail'],
   methods: {
-    ...mapActions(['historyChatRoom']),
+    ...mapActions(['historyChatRoom', 'deleteMember', 'getDetailGroup']),
     handleEmit () {
       const idRoom = this.idRoom
       const idUser = this.idLogin
@@ -91,6 +98,22 @@ export default {
           const result = res.data.result
           console.log('ini result', res.data)
           this.chatRoom.push(result)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    handleDeleteMember (idRoom, idUser) {
+      console.log(idRoom)
+      console.log(idUser)
+      this.deleteMember({ idRoom, idUser })
+        .then((result) => {
+          this.getDetailGroup({ idRoom })
+          Swal.fire(
+            result.message,
+            '',
+            'success'
+          )
         })
         .catch((err) => {
           console.log(err)

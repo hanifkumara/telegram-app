@@ -127,6 +127,30 @@ export default new Vuex.Store({
           })
       })
     },
+    addMemberGroup (context, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post(`${process.env.VUE_APP_SERVICE_API}/message-room/add-member`, payload)
+          .then(res => {
+            const { result } = res.data
+            resolve(result)
+          })
+          .catch(err => {
+            reject(err.response)
+          })
+      })
+    },
+    deleteMember (context, payload) {
+      return new Promise((resolve, reject) => {
+        console.log('ini payload', payload)
+        axios.delete(`${process.env.VUE_APP_SERVICE_API}/message-room?idRoom=${payload.idRoom}&idUser=${payload.idUser}`)
+          .then(result => {
+            resolve(result.data.result)
+          })
+          .catch(err => {
+            reject(err.response)
+          })
+      })
+    },
     getProfileUser (context, id) {
       return new Promise((resolve, reject) => {
         axios.get(`${process.env.VUE_APP_SERVICE_API}/users/${id}`)
