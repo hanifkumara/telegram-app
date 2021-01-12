@@ -24,19 +24,14 @@
         </div>
         <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
-      <button class="btn">Register</button>
+      <Button title="Register" background="primary" />
       <div class="register-with d-flex justify-content-between align-items-center">
         <div class="line"></div>
         <p style="color: #848484;">Register With</p>
         <div class="line"></div>
       </div>
-      <button class="btn google d-flex justify-content-center align-items-center">
-        <div class="icon-google">
-          <img src="@/assets/img/bx_bxl-google.png" alt="icon-google">
-        </div>
-        Google
-      </button>
     </form>
+    <Button title="Google" background="white" icon="bx_bxl-google.png"/>
   </div>
 </template>
 
@@ -44,9 +39,13 @@
 import { mapActions } from 'vuex'
 import showPass from '../../mixins/showPassword'
 import Swal from 'sweetalert2'
+import Button from '../../components/base/Button'
 
 export default {
   name: 'Register',
+  components: {
+    Button
+  },
   data () {
     return {
       name: '',
@@ -167,9 +166,6 @@ button {
   padding: 10px 0;
   margin: 20px 0;
   color: white;
-}
-button:hover{
-  color: white
 }
 .line{
   width: 30%;

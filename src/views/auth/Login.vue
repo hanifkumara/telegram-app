@@ -19,19 +19,14 @@
         <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
     <h5 class="forgot-password">Forgot password?</h5>
-    <button class="btn login">Login</button>
+    <Button title="Login" background="primary"/>
     </form>
     <div class="login-with d-flex justify-content-between align-items-center">
       <div class="line"></div>
       <p style="color: #848484;">Login With</p>
       <div class="line"></div>
     </div>
-    <button class="btn google d-flex justify-content-center align-items-center">
-      <div class="icon-google">
-        <img src="@/assets/img/bx_bxl-google.png" alt="icon-google">
-      </div>
-      Google
-    </button>
+    <Button title="Google" background="white" icon="bx_bxl-google.png"/>
     <h6 class="signup">Don’t have an account? <span style="color: #7E98DF; margin-left: 5px; cursor: pointer;" @click="toSignup">Sign Up</span></h6>
   </div>
 </template>
@@ -40,10 +35,14 @@
 import showPass from '../../mixins/showPassword'
 import { mapActions } from 'vuex'
 import Swal from 'sweetalert2'
+import Button from '../../components/base/Button'
 
 export default {
   name: 'Login',
   mixins: [showPass],
+  components: {
+    Button
+  },
   data () {
     return {
       email: '',
