@@ -302,5 +302,8 @@ export default {
   .content-chat {
     font-size: 14px;
   }
+  .set-size{
+    display: none;
+  }
 }
 </style>
