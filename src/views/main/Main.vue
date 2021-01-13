@@ -255,7 +255,7 @@ export default {
     return {
       myId: localStorage.getItem('id'),
       allMassage: [],
-      socket: io('http://localhost:5000'),
+      socket: io(`${process.env.VUE_APP_SOCKET_URL}`),
       dataProfile: [],
       modalShow: false,
       modalShow2: false,
