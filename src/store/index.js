@@ -18,7 +18,8 @@ export default new Vuex.Store({
     groupDetail: [],
     myProfile: {},
     profile: {},
-    detailShort: {}
+    detailShort: {},
+    setLastChat: []
   },
   mutations: {
     SET_AUTH (state, payload) {
@@ -54,6 +55,9 @@ export default new Vuex.Store({
     },
     REMOVE_TOKEN (state) {
       state.token = null
+    },
+    SET_LAST_CHAT_PRIVATE (state, payload) {
+      state.setLastChat = payload
     }
   },
   actions: {
@@ -75,7 +79,8 @@ export default new Vuex.Store({
         axios.get(`${process.env.VUE_APP_SERVICE_API}/friend-list?name=${payload.name}`)
           .then((res) => {
             const result = res.data.result
-            context.commit('GET_ALL_FRIEND', result)
+            context.commit('GET_ALL_FRIEND', result.result)
+            context.commit('SET_LAST_CHAT_PRIVATE', result.lastChat)
             resolve(result)
           })
           .catch((err) => {
@@ -104,7 +109,8 @@ export default new Vuex.Store({
             console.log('ini detail', result)
             const shortDetail = {
               count: result.length,
-              titleGroup: result[0].nameRoom
+              titleGroup: result[0].nameRoom,
+              photoRoom: result[0].photoRoom
             }
             context.commit('SHORT_DETAIL_GROUP', shortDetail)
             context.commit('GET_DETAIL_GROUP', result)
@@ -139,12 +145,37 @@ export default new Vuex.Store({
           })
       })
     },
+    createRoomChat ({ dispatch }, payload) {
+      return new Promise((resolve, reject) => {
+        console.log('ini payload room', payload)
+        axios.post(`${process.env.VUE_APP_SERVICE_API}/message-room/add-room`, payload)
+          .then(res => {
+            dispatch('getGroupChat')
+            resolve(res)
+          })
+          .catch(err => {
+            reject(err.response)
+          })
+      })
+    },
     deleteMember (context, payload) {
       return new Promise((resolve, reject) => {
         console.log('ini payload', payload)
         axios.delete(`${process.env.VUE_APP_SERVICE_API}/message-room?idRoom=${payload.idRoom}&idUser=${payload.idUser}`)
           .then(result => {
             resolve(result.data.result)
+          })
+          .catch(err => {
+            reject(err.response)
+          })
+      })
+    },
+    deleteRoom ({ dispatch }, idRoom) {
+      return new Promise((resolve, reject) => {
+        console.log('ini idRoom', idRoom)
+        axios.delete(`${process.env.VUE_APP_SERVICE_API}/message-room/delete-room/${idRoom}`)
+          .then(result => {
+            resolve(result)
           })
           .catch(err => {
             reject(err.response)
@@ -194,6 +225,7 @@ export default new Vuex.Store({
         axios.post(`${process.env.VUE_APP_SERVICE_API}/message/chat-private`, payload)
           .then(res => {
             const result = res.data.result
+            console.log(result)
             context.commit('SET_HISTORY_PRIVATE', result)
             resolve(result)
           })
@@ -329,6 +361,9 @@ export default new Vuex.Store({
     },
     isLogin (state) {
       return state.token !== null
+    },
+    lastChatPrivate (state) {
+      return state.setLastChat
     }
   },
   modules: {

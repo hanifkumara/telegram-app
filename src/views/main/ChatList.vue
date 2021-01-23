@@ -135,13 +135,6 @@ export default {
       this.status = data
     })
     this.socket.on('sendBack', data => {
-      if (data.notif) {
-        this.$toasted.show(`Anda menerima pesan dari ${data.name}`, {
-          type: 'info',
-          duration: 3000,
-          keepOnHover: true
-        })
-      }
       this.handleHistory()
     })
   },

@@ -22,6 +22,12 @@
               </div>
               <h6>Contacts</h6>
             </div>
+            <div class="popup contacts" @click="handleGroupButton = !handleGroupButton">
+              <div class="icon-popup">
+                <img src="@/assets/img/Contacts.png" alt="icon-contact">
+              </div>
+              <h6>Group</h6>
+            </div>
             <div class="popup calls">
               <div class="icon-popup">
                 <img src="@/assets/img/Vector.png" alt="icon-calls">
@@ -40,16 +46,16 @@
               </div>
               <h6>Invite Friend</h6>
             </div>
-            <div class="popup" @click="handleGroup">
-              <div class="icon-popup">
-              </div>
-              <h6>Group</h6>
-            </div>
             <div class="popup telegram-faq">
               <div class="icon-popup">
                 <img src="@/assets/img/FAQ.png" alt="icon telegram-faq">
               </div>
               <h6>Telegram FAQ</h6>
+            </div>
+            <div class="popup" @click="handleLogout">
+              <div class="icon-popup">
+              </div>
+              <h6>Logout</h6>
             </div>
           </div>
           <div class="my-profile" ref="myProfile">
@@ -149,8 +155,27 @@
             </div>
             </div>
           </div>
-          <div class="container-group" ref="group">
-            <h5>Hello nif</h5>
+          <div class="container-group" v-show="handleGroupButton">
+            <h5>Create New Group</h5>
+            <input type="text" class="form-control my-3" placeholder="Please input name group . . ." v-model="nameGroup">
+            <button class="btn btn-primary" @click="handleCreateRoom">Create</button>
+            <h5 class="mt-4">All Group</h5>
+            <table class="table mt-2">
+              <thead>
+                <tr>
+                  <th scope="col">Photo</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(data, index) in allGroupChat" :key="index">
+                  <td class="table-photo-room"><img :src="data.photoRoom" alt="photoRoom" ></td>
+                  <td>{{data.nameRoom}}</td>
+                  <td><div class="btn btn-danger" ref="destroyRoom" @click="handleDeleteRoom(data.idRoom)">Delete</div></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="container-add-contact" ref="addContact">
             <div class="title-add-contact">
@@ -207,29 +232,27 @@
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.friendName}}</h5>
-                  <p>Pesan singkat</p>
+                  <p>Chat private</p>
                 </div>
               </div>
               <div class="time-chat">
-                <h6>5.30</h6>
-                <div class="count-new-chat">2</div>
+                <h6></h6>
+                <div class="count-new-chat"></div>
               </div>
             </div>
             <div class="list-room" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
               <div class="room-left d-flex">
                 <div class="icon-room">
-                  <img v-if="data.nameRoom === 'Web 5'" src="@/assets/img/pp.jpg" alt="Web 5">
-                  <img v-if="data.nameRoom === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="Picnic Schedule">
-                  <img v-else :src="data.photoRoom" alt="Image Room">
+                  <img :src="data.photoRoom" alt="Image Room">
                 </div>
                 <div class="room-name ml-2">
                   <h5>{{data.nameRoom}}</h5>
-                  <p>chat group</p>
+                  <p>Chat group</p>
                 </div>
               </div>
               <div class="time-chat">
-                <h6>5.30</h6>
-                <div class="count-new-chat">2</div>
+                <h6></h6>
+                <div class="count-new-chat"></div>
               </div>
             </div>
           </div>
@@ -237,7 +260,7 @@
       </div>
       <div class="col-md-8">
         <div class="content-right">
-          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory" :detail-group="detailGroup" :short-detail="shortDetail"/>
+          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory" :detail-group="detailGroup" :short-detail="shortDetail" v-on:handle-notif="handleNotif"/>
         </div>
       </div>
     </div>
@@ -275,11 +298,13 @@ export default {
         lat: 0,
         lng: 0
       },
-      idRoom: ''
+      idRoom: '',
+      handleGroupButton: false,
+      nameGroup: ''
     }
   },
   methods: {
-    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup']),
+    ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup', 'createRoomChat', 'deleteRoom']),
     toHome () {
       const myProfile = this.$refs.myProfile
       const addContact = this.$refs.addContact
@@ -287,12 +312,14 @@ export default {
       myProfile.style.display = 'none'
       addContact.style.display = 'none'
       myContact.style.display = 'none'
+      this.getGroupChat()
       this.getAllFriend({ name: '' })
     },
     handleLogout () {
       const data = {
         socketId: 'Offline'
       }
+      this.socket.emit('logout', this.myId)
       this.logout(data)
         .then(res => {
           console.log('coba bro')
@@ -476,11 +503,35 @@ export default {
     },
     handleDataGroup (idRoom) {
       console.log('ini idroom', idRoom)
-      this.idRoom = idRoom
       this.socket.emit('initialRoom', idRoom)
+      this.idRoom = idRoom
       this.getDetailGroup({ idRoom })
       this.historyChatRoom({ idRoom })
       this.$router.push({ name: 'ChatRoom' }).catch(() => {})
+    },
+    handleNotif (message) {
+      console.log('haii')
+      console.log(message)
+    },
+    handleCreateRoom () {
+      this.createRoomChat({ name: this.nameGroup })
+        .then(res => {
+          this.nameGroup = ''
+          Swal.fire(res.data.result.message, '', 'success')
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    handleDeleteRoom (idRoom) {
+      this.deleteRoom(idRoom)
+        .then((result) => {
+          Swal.fire(result.data.result.message, '', 'success')
+          this.$refs.destroyRoom[0].parentNode.parentNode.remove()
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
   mounted () {
@@ -508,9 +559,28 @@ export default {
     this.socket.emit('handleStatus', this.myId)
     this.getAllFriend({ name: '' })
     this.getGroupChat()
+    this.socket.on('sendBack', data => {
+      console.log(data)
+      if (data.notif) {
+        this.$toasted.show(`Anda menerima pesan dari ${data.name}`, {
+          type: 'info',
+          duration: 3000,
+          keepOnHover: true
+        })
+      }
+    })
+    this.socket.on('sendBackRoom', data => {
+      if (data.notif) {
+        this.$toasted.show(`Anda menerima pesan dari Grup ${data.nameRoom}`, {
+          type: 'info',
+          duration: 3000,
+          keepOnHover: true
+        })
+      }
+    })
   },
   computed: {
-    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend', 'allGroupChat', 'chatRoomHistory', 'detailGroup', 'shortDetail']),
+    ...mapGetters(['allContact', 'profileUser', 'myProfile', 'allFriend', 'allGroupChat', 'chatRoomHistory', 'detailGroup', 'shortDetail', 'lastChatPrivate']),
     handleIconUnfriend () {
       const data = this.allFriend
       const result = data.filter((value, index) => {
@@ -841,14 +911,22 @@ input#username{
   background-color: #fff;
 }
 .container-group{
-  display: none;
   position: absolute;
-  left: 0;
+  left: -2px;
   top: 80px;
   width: 100%;
   z-index: 2;
   overflow: auto;
   height: 550px;
   background-color: #fff;
+}
+.table-photo-room{
+  width: 90px;
+  height: 90px;
+}
+.table-photo-room > img {
+  object-fit: contain;
+  height: 100%;
+  width: 100%;
 }
 </style>

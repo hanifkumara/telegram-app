@@ -4,8 +4,7 @@
       <div class="menu-left">
         <div class="photo-name d-flex align-items-center">
           <div class="photo-chat">
-            <img v-if="shortDetail.titleGroup === 'Web 5'" src="@/assets/img/pp.jpg" alt="photo-profile">
-            <img v-if="shortDetail.titleGroup === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="photo-profile">
+            <img :src="shortDetail.photoRoom" alt="photo-profile">
           </div>
           <div class="status">
             <h5>{{shortDetail.titleGroup}}</h5>
@@ -20,8 +19,7 @@
         <b-modal id="modal-1" :title="shortDetail.titleGroup" ok-only>
             <div class="my-2 content-modal">
               <div class="photo-chat mb-3">
-                <img v-if="shortDetail.titleGroup === 'Web 5'" src="@/assets/img/pp.jpg" alt="photo-profile">
-                <img v-if="shortDetail.titleGroup === 'Picnic Schedule'" src="@/assets/img/ppG.jpg" alt="photo-profile">
+                <img :src="shortDetail.photoRoom" alt="photo-profile">
               </div>
               <hr>
               <h4>{{shortDetail.count}} member</h4>
@@ -37,7 +35,8 @@
                     <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
                   </div>
                 </div>
-                <div class="delete-member" @click="handleDeleteMember(idRoom, data.idUser)">
+                <div v-if="data.idUser === idLogin"></div>
+                <div v-else class="delete-member" @click="handleDeleteMember(idRoom, data.idUser)">
                   delete
                 </div>
               </div>
@@ -124,16 +123,8 @@ export default {
     ...mapGetters(['chatRoomHistory'])
   },
   mounted () {
-    console.log('hai')
     this.socket.on('sendBackRoom', data => {
-      if (data.notif) {
-        this.$toasted.show(`Anda menerima pesan dari Grup ${data.nameRoom}`, {
-          type: 'info',
-          duration: 3000,
-          keepOnHover: true
-        })
-      }
-      console.log('ini data sendbackroom', data)
+      console.log(data.notif)
       this.handleHistoryRoom()
     })
   },
