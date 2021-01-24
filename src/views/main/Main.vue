@@ -4,7 +4,7 @@
       <div class="col-md-4">
         <div class="content-left">
           <div class="title-left d-flex justify-content-between align-items-center">
-            <h2 style="color: #7E98DF;" @click="toHome">Telegram</h2>
+            <h2 style="color: #7E98DF;" @click="toHome">Chats App</h2>
             <div @click="handleToggle" class="icon-menu">
               <img src="@/assets/img/Menu.png" alt="menu-icon">
             </div>

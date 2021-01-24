@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Auth from '../views/auth/Auth.vue'
 import Login from '../views/auth/Login.vue'
 import Register from '../views/auth/Register.vue'
+import ForgotPassword from '../views/auth/ForgotPassword.vue'
+import ConfirmationEmail from '../views/auth/ConfirmationEmail.vue'
 import Main from '../views/main/Main.vue'
 import Room from '../views/room/Room.vue'
 import MapPage from '../views/map/Map.vue'
@@ -62,8 +64,18 @@ const routes = [
         path: 'register',
         name: 'Register',
         component: Register
+      },
+      {
+        path: 'forgot-password',
+        name: 'ForgotPassword',
+        component: ForgotPassword
       }
     ]
+  },
+  {
+    path: '/confirmation-email/:token',
+    name: 'ConfirmationEmail',
+    component: ConfirmationEmail
   },
   {
     path: '/main',

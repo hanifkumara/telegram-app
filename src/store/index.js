@@ -293,7 +293,7 @@ export default new Vuex.Store({
           .then(res => {
             Swal.fire(
               'Register Sucess!',
-              '',
+              'please check your email for verification account!!',
               'success'
             )
             router.push({ name: 'Auth' })
