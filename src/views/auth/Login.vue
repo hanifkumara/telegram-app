@@ -18,7 +18,7 @@
         </div>
         <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
-    <h5 class="forgot-password">Forgot password?</h5>
+    <h5 class="forgot-password" @click="toForgotPassword">Forgot password?</h5>
     <Button title="Login" background="primary"/>
     </form>
     <div class="login-with d-flex justify-content-between align-items-center">
@@ -114,6 +114,9 @@ export default {
     },
     toSignup () {
       this.$router.push({ name: 'Register' })
+    },
+    toForgotPassword () {
+      this.$router.push({ name: 'ForgotPassword' })
     }
   }
 }

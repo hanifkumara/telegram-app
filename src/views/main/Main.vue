@@ -5,11 +5,11 @@
         <div class="content-left">
           <div class="title-left d-flex justify-content-between align-items-center">
             <h2 style="color: #7E98DF;" @click="toHome">Chats App</h2>
-            <div @click="handleToggle" class="icon-menu">
+            <div @click="handlePopupButton = !handlePopupButton" class="icon-menu">
               <img src="@/assets/img/Menu.png" alt="menu-icon">
             </div>
           </div>
-          <div class="container-popup" ref="popup">
+          <div class="container-popup" v-show="handlePopupButton">
             <div class="popup setting" @click="handleSetting">
               <div class="icon-popup">
                 <img src="@/assets/img/Settings.png" alt="icon-setting">
@@ -54,6 +54,7 @@
             </div>
             <div class="popup" @click="handleLogout">
               <div class="icon-popup">
+                <img src="@/assets/img/log-out.png" alt="Logout Icon">
               </div>
               <h6>Logout</h6>
             </div>
@@ -141,14 +142,6 @@
                     <b-dropdown-item v-for="dataGroup in allGroupChat" :key="dataGroup.id" @click="handleInviteGroup(dataGroup.idRoom, data.friendId)">{{dataGroup.nameRoom}}</b-dropdown-item>
                   </b-dropdown>
                 </div>
-                <!-- <b-dropdown id="dropdown-1" text="Dropdown Button" class="m-md-2">
-                  <b-dropdown-item>First Action</b-dropdown-item>
-                  <b-dropdown-item>Second Action</b-dropdown-item>
-                  <b-dropdown-item>Third Action</b-dropdown-item>
-                  <b-dropdown-divider></b-dropdown-divider>
-                  <b-dropdown-item active>Active action</b-dropdown-item>
-                  <b-dropdown-item disabled>Disabled action</b-dropdown-item>
-                </b-dropdown> -->
                 <div class="unfriend" @click="handleInvite(data.friendId)">
                   <img src="@/assets/img/icons8-unfriend-50.png" alt="unfriend">
                 </div>
@@ -300,7 +293,8 @@ export default {
       },
       idRoom: '',
       handleGroupButton: false,
-      nameGroup: ''
+      nameGroup: '',
+      handlePopupButton: false
     }
   },
   methods: {
@@ -835,10 +829,9 @@ input#username{
   background: #afbfeb;
 }
 .container-popup{
-  display: none;
   right: 0;
   top: 70px;
-  z-index: 99;
+  z-index: 999;
   width: 70%;
   padding: 20px 0;
   color: white;

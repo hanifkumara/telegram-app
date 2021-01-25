@@ -5,6 +5,7 @@ import Auth from '../views/auth/Auth.vue'
 import Login from '../views/auth/Login.vue'
 import Register from '../views/auth/Register.vue'
 import ForgotPassword from '../views/auth/ForgotPassword.vue'
+import CreatePassword from '../views/auth/CreatePassword.vue'
 import ConfirmationEmail from '../views/auth/ConfirmationEmail.vue'
 import Main from '../views/main/Main.vue'
 import Room from '../views/room/Room.vue'
@@ -69,6 +70,11 @@ const routes = [
         path: 'forgot-password',
         name: 'ForgotPassword',
         component: ForgotPassword
+      },
+      {
+        path: 'create-password/:token',
+        name: 'CreatePassword',
+        component: CreatePassword
       }
     ]
   },
