@@ -36,7 +36,7 @@
                   </div>
                 </div>
                 <div v-if="data.idUser === idLogin"></div>
-                <div v-else class="delete-member" @click="handleDeleteMember(idRoom, data.idUser)">
+                <div v-else class="badge badge-danger" style="height: fit-content;" @click="handleDeleteMember(idRoom, data.idUser)">
                   delete
                 </div>
               </div>
@@ -236,5 +236,8 @@ export default {
   margin: auto;
   width: 400px;
   height: 400px;
+}
+.badge-danger{
+  cursor: pointer
 }
 </style>

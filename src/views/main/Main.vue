@@ -10,13 +10,13 @@
             </div>
           </div>
           <div class="container-popup" v-show="handlePopupButton">
-            <div class="popup setting" @click="handleSetting">
+            <div class="popup setting" @click="handleProfileButton = !handleProfileButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Settings.png" alt="icon-setting">
               </div>
               <h6>Settings</h6>
             </div>
-            <div class="popup contacts" @click="handleMyContact">
+            <div class="popup contacts" @click="handleContactButton = !handleContactButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Contacts.png" alt="icon-contact">
               </div>
@@ -28,30 +28,30 @@
               </div>
               <h6>Group</h6>
             </div>
-            <div class="popup calls">
+            <!-- <div class="popup calls">
               <div class="icon-popup">
                 <img src="@/assets/img/Vector.png" alt="icon-calls">
               </div>
               <h6>Calls</h6>
-            </div>
-            <div class="popup save-messages">
+            </div> -->
+            <!-- <div class="popup save-messages">
               <div class="icon-popup">
                 <img src="@/assets/img/Rectangle 37.png" alt="icon-save-message">
               </div>
               <h6>Save Messages</h6>
-            </div>
-            <div class="popup invite-friend" @click="handleAddContact">
+            </div> -->
+            <div class="popup invite-friend" @click="handleInviteButton = !handleInviteButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Invite friends.png" alt="icon-invite-friend">
               </div>
               <h6>Invite Friend</h6>
             </div>
-            <div class="popup telegram-faq">
+            <!-- <div class="popup telegram-faq">
               <div class="icon-popup">
                 <img src="@/assets/img/FAQ.png" alt="icon telegram-faq">
               </div>
               <h6>Telegram FAQ</h6>
-            </div>
+            </div> -->
             <div class="popup" @click="handleLogout">
               <div class="icon-popup">
                 <img src="@/assets/img/log-out.png" alt="Logout Icon">
@@ -59,7 +59,10 @@
               <h6>Logout</h6>
             </div>
           </div>
-          <div class="my-profile" ref="myProfile">
+          <div class="my-profile" v-show="handleProfileButton">
+            <div class="icon-back" style="margin-bottom: -25px" @click="handleProfileButton = !handleProfileButton">
+              <img src="@/assets/img/back.png" alt="Back Icon">
+            </div>
             <div class="middle-menu-toggle">
               <h4 style="color: #7E98DF; margin-bottom: 20px;">{{myProfile.username}}</h4>
               <label class="img-profile-toggle">
@@ -126,7 +129,13 @@
                 </GmapMap>
             <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
           </div>
-          <div class="my-contact" ref="myContact">
+          <div class="my-contact"  v-show="handleContactButton">
+            <div class="d-flex align-items-center mt-10">
+                <div class="icon-back" @click="handleContactButton = !handleContactButton">
+                  <img src="@/assets/img/back.png" alt="Back Icon">
+                </div>
+                <h4 style="padding-top: 10px; margin-left: 15px;">My Contact</h4>
+              </div>
             <div class="d-flex justify-content-between mt-3" v-for="data in allFriend" :key="data.id">
               <div class="card-left d-flex">
                 <div class="photo">
@@ -149,7 +158,12 @@
             </div>
           </div>
           <div class="container-group" v-show="handleGroupButton">
-            <h5>Create New Group</h5>
+            <div class="d-flex align-items-center">
+              <div class="icon-back" @click="handleGroupButton = !handleGroupButton">
+                <img src="@/assets/img/back.png" alt="Back Icon">
+              </div>
+              <h5 style="margin-left: 20px;">Create New Group</h5>
+            </div>
             <input type="text" class="form-control my-3" placeholder="Please input name group . . ." v-model="nameGroup">
             <button class="btn btn-primary" @click="handleCreateRoom">Create</button>
             <h5 class="mt-4">All Group</h5>
@@ -170,9 +184,14 @@
               </tbody>
             </table>
           </div>
-          <div class="container-add-contact" ref="addContact">
+          <div class="container-add-contact" v-show="handleInviteButton">
             <div class="title-add-contact">
-              <h4 style="padding-top: 20px;">All users TelegramApp</h4>
+              <div class="d-flex align-items-center mt-10">
+                <div class="icon-back" @click="handleInviteButton = !handleInviteButton">
+                  <img src="@/assets/img/back.png" alt="Back Icon">
+                </div>
+                <h4 style="padding-top: 10px; margin-left: 15px;">All users TelegramApp</h4>
+              </div>
               <input type="text" placeholder="Search users name . . ." v-model="searchUser" class="form-control">
             </div>
             <hr>
@@ -218,7 +237,7 @@
             <div  class="display-default" v-if="allFriend.length < 1 && allGroupChat.length < 1">
               <h2>You don't have chat friend yet. Please add friends in the invite friend menu</h2>
             </div>
-            <div class="d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
+            <div class="hover-chat d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
               <div class="card-left d-flex" @click="handleProfileUser(data.friendId)">
                 <div class="photo">
                   <img :src="data.friendPhoto" alt="photo-friend">
@@ -233,7 +252,7 @@
                 <div class="count-new-chat"></div>
               </div>
             </div>
-            <div class="list-room" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
+            <div class="list-room hover-chat" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
               <div class="room-left d-flex">
                 <div class="icon-room">
                   <img :src="data.photoRoom" alt="Image Room">
@@ -294,18 +313,16 @@ export default {
       idRoom: '',
       handleGroupButton: false,
       nameGroup: '',
-      handlePopupButton: false
+      handlePopupButton: false,
+      handleInviteButton: false,
+      handleContactButton: false,
+      handleProfileButton: false,
+      buttonInvite: false
     }
   },
   methods: {
     ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup', 'createRoomChat', 'deleteRoom']),
     toHome () {
-      const myProfile = this.$refs.myProfile
-      const addContact = this.$refs.addContact
-      const myContact = this.$refs.myContact
-      myProfile.style.display = 'none'
-      addContact.style.display = 'none'
-      myContact.style.display = 'none'
       this.getGroupChat()
       this.getAllFriend({ name: '' })
     },
@@ -330,14 +347,6 @@ export default {
         handle.style.display = 'none'
       }
     },
-    handleSetting () {
-      const handle = this.$refs.myProfile
-      if (handle.style.display === 'none') {
-        handle.style.display = 'block'
-      } else {
-        handle.style.display = 'none'
-      }
-    },
     handleSearchUser () {
       this.getAllContact({ name: this.searchUser })
     },
@@ -346,15 +355,6 @@ export default {
     },
     handleMyContact () {
       const handle = this.$refs.myContact
-      if (handle.style.display === 'none') {
-        handle.style.display = 'block'
-      } else {
-        handle.style.display = 'none'
-      }
-    },
-    handleAddContact () {
-      this.getAllContact({ name: '' })
-      const handle = this.$refs.addContact
       if (handle.style.display === 'none') {
         handle.style.display = 'block'
       } else {
@@ -378,9 +378,11 @@ export default {
       }
       this.addMemberGroup(payload)
         .then((result) => {
+          Swal.fire(result.message, '', 'success')
           console.log(result)
         })
         .catch((err) => {
+          Swal.fire(err.data.err.message, '', 'warning')
           console.log(err)
         })
     },
@@ -683,8 +685,8 @@ export default {
   width: 2px;
 }
 .my-profile{
+  transition: .5s;
   z-index: 2;
-  display: none;
   padding: 0 22px;
   padding-top: 20px;
   position: absolute;
@@ -847,10 +849,10 @@ input#username{
 .container-add-contact{
   overflow: auto;
   background-color: white;
-  width: 100%;
+  width: 102%;
+  margin-left: -2px;
   height: 570px;
   overflow: auto;
-  display: none;
   position: absolute;
   z-index: 2;
 }
@@ -893,7 +895,6 @@ input#username{
   justify-content: space-between;
 }
 .my-contact{
-  display: none;
   position: absolute;
   left: -1px;
   top: 80px;
@@ -921,5 +922,17 @@ input#username{
   object-fit: contain;
   height: 100%;
   width: 100%;
+}
+.icon-back{
+  cursor: pointer;
+}
+.icon-back:hover{
+  transform: scale(1.05)
+}
+.hover-chat{
+  cursor: pointer;
+}
+.hover-chat:hover{
+  transform: scale(1.01)
 }
 </style>
