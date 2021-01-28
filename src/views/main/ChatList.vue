@@ -4,7 +4,7 @@
       <div class="menu-left">
         <div class="photo-name d-flex">
           <div class="photo-chat">
-            <img :src="dataProfile.photo" alt="photo-profile">
+            <img :src="dataProfile.photo" alt="photo-profile" @error="handlePlaceholderImg">
           </div>
           <div class="status">
             <h5>{{dataProfile.name}}</h5>
@@ -22,7 +22,7 @@
                 <h4 style="color: #7E98DF;">{{dataProfile.username}}</h4>
                 <h4 style="color: #848484; font-size: 14px;" v-if="!dataProfile.username">This user not yet set username</h4>
                 <div class="photo-chat-modal my-2">
-                  <img :src="dataProfile.photo" alt="photo-profile">
+                  <img :src="dataProfile.photo" alt="photo-profile" @error="handlePlaceholderImg">
                 </div>
               </div>
               <h4>{{dataProfile.name}}</h4>
@@ -50,11 +50,11 @@
           </b-modal>
       </div>
     </div>
-    <div class="content-chat" ref="messageBody" v-if="dataProfile.photo">
+    <div class="content-chat" ref="messageBody" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="looping" v-for="(data, index) in chatHistory" :key="index">
         <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin ">
           <div class="icon-profile-left">
-            <img :src="dataProfile.photo" alt="receiver-photo">
+            <img :src="dataProfile.photo" alt="receiver-photo" @error="handlePlaceholderImg">
           </div>
           <div class="card-message-left mt-2">
             <h5>{{data.message}}</h5>
@@ -70,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="bottom-chat" v-if="dataProfile.photo">
+    <div class="bottom-chat" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="input-chat">
         <input type="text" placeholder="Input your message . . ."  v-model="inputMessage" @keypress.enter="handleEmit">
         <div class="icon-chat d-flex justify-content-between">
@@ -109,6 +109,9 @@ export default {
   methods: {
     ...mapActions(['historyChatPrivate']),
     // const result = res.data.result
+    handlePlaceholderImg (e) {
+      e.target.src = 'https://dummyimage.com/600x600/c4bac4/525252.jpg&text=Chat+Private'
+    },
     handleHistory () {
       const payload = {
         idReceiver: this.dataProfile.id

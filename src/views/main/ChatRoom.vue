@@ -1,72 +1,75 @@
 <template>
   <div>
-    <div class="top-menu">
-      <div class="menu-left">
-        <div class="photo-name d-flex align-items-center">
-          <div class="photo-chat">
-            <img :src="shortDetail.photoRoom" alt="photo-profile">
-          </div>
-          <div class="status">
-            <h5>{{shortDetail.titleGroup}}</h5>
-            <h6>{{shortDetail.count}} users already join group</h6>
-          </div>
-        </div>
-      </div>
-      <div class="menu-right">
-        <div class="icon-profile" v-b-modal.modal-1>
-          <img src="@/assets/img/Profile menu.png" alt="icon-profile">
-        </div>
-        <b-modal id="modal-1" :title="shortDetail.titleGroup" ok-only>
-            <div class="my-2 content-modal">
-              <div class="photo-chat mb-3">
-                <img :src="shortDetail.photoRoom" alt="photo-profile">
-              </div>
-              <hr>
-              <h4>{{shortDetail.count}} member</h4>
-              <div class="detail-user-join d-flex justify-content-between" v-for="data in detailGroup" :key="data.id">
-                <div class="left-detail d-flex">
-                  <div class="detail-photo">
-                    <img :src="data.photoMember" alt="Photo Member">
-                  </div>
-                  <div class="name-phone ml-2">
-                    <h5 v-if="data.idUser === idLogin">You</h5>
-                    <h5 v-else>{{data.nameMember}}</h5>
-                    <h6 v-if="data.phoneMember">{{data.phoneMember}}</h6>
-                    <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
-                  </div>
-                </div>
-                <div v-if="data.idUser === idLogin"></div>
-                <div v-else class="badge badge-danger" style="height: fit-content;" @click="handleDeleteMember(idRoom, data.idUser)">
-                  delete
-                </div>
-              </div>
+    <div v-if="shortDetail.photoRoom">
+      <div class="top-menu">
+        <div class="menu-left">
+          <div class="photo-name d-flex align-items-center">
+            <div class="photo-chat">
+              <img :src="shortDetail.photoRoom" alt="photo-profile" @error="handlePlaceholderImg">
             </div>
-          </b-modal>
+            <div class="status">
+              <h5>{{shortDetail.titleGroup}}</h5>
+              <h6>{{shortDetail.count}} users already join group</h6>
+            </div>
+          </div>
+        </div>
+        <div class="menu-right">
+          <div class="icon-profile" v-b-modal.modal-1>
+            <img src="@/assets/img/Profile menu.png" alt="icon-profile">
+          </div>
+          <b-modal id="modal-1" :title="shortDetail.titleGroup" ok-only>
+              <div class="my-2 content-modal">
+                <div class="photo-chat mb-3">
+                  <img :src="shortDetail.photoRoom" alt="photo-profile" @error="handlePlaceholderImg">
+                </div>
+                <hr>
+                <h4>{{shortDetail.count}} member</h4>
+                <div class="detail-user-join d-flex justify-content-between" v-for="data in detailGroup" :key="data.id">
+                  <div class="left-detail d-flex">
+                    <div class="detail-photo">
+                      <img :src="data.photoMember" alt="Photo Member" @error="handlePlaceholderImg">
+                    </div>
+                    <div class="name-phone ml-2">
+                      <h5 v-if="data.idUser === idLogin">You</h5>
+                      <h5 v-else>{{data.nameMember}}</h5>
+                      <h6 v-if="data.phoneMember">{{data.phoneMember}}</h6>
+                      <h6 v-else style="font-size: 14px; color: grey;">this user have not fill phone number</h6>
+                    </div>
+                  </div>
+                  <div v-if="data.idUser === idLogin"></div>
+                  <div v-else class="badge badge-danger" style="height: fit-content;" @click="handleDeleteMember(idRoom, data.idUser)">
+                    delete
+                  </div>
+                </div>
+              </div>
+            </b-modal>
+        </div>
       </div>
-    </div>
-    <div class="content-chat" ref="messageBody">
-      <div v-for="data in chatRoom" :key="data.id">
-        <div class="chat-right" v-if="data.idUser === idLogin">
-          <div class="message-right">
+      <div class="content-chat" ref="messageBody">
+        <div v-for="data in chatRoom" :key="data.id">
+          <div class="chat-right" v-if="data.idUser === idLogin">
+            <div class="message-right">
+              <h6>{{data.message}}</h6>
+            </div>
+          </div>
+          <div class="chat-left" v-else>
+            <p>{{data.nameMember}}</p>
             <h6>{{data.message}}</h6>
           </div>
         </div>
-        <div class="chat-left" v-else>
-          <p>{{data.nameMember}}</p>
-          <h6>{{data.message}}</h6>
+      </div>
+      <div class="bottom-chat">
+        <div class="input-message">
+          <input type="text" class="form-control" v-model="inputMessage" placeholder="Type your message . . ." @keypress.enter="handleEmit">
+          <div class="icon-input">
+            <img src="@/assets/img/Plus.png" alt="icon plus">
+            <img src="@/assets/img/Vector2.png" alt="icon stiker">
+            <img src="@/assets/img/Group 181.png" alt="icon record">
+          </div>
         </div>
       </div>
     </div>
-    <div class="bottom-chat">
-      <div class="input-message">
-        <input type="text" class="form-control" v-model="inputMessage" placeholder="Type your message . . ." @keypress.enter="handleEmit">
-        <div class="icon-input">
-          <img src="@/assets/img/Plus.png" alt="icon plus">
-          <img src="@/assets/img/Vector2.png" alt="icon stiker">
-          <img src="@/assets/img/Group 181.png" alt="icon record">
-        </div>
-      </div>
-    </div>
+    <h4 v-else>Hello brow</h4>
   </div>
 </template>
 
@@ -85,6 +88,9 @@ export default {
   props: ['socket', 'id-room', 'chat-room', 'detail-group', 'short-detail'],
   methods: {
     ...mapActions(['historyChatRoom', 'deleteMember', 'getDetailGroup']),
+    handlePlaceholderImg (e) {
+      e.target.src = 'https://dummyimage.com/600x600/c4bac4/525252.jpg&text=Chat+Group'
+    },
     handleEmit () {
       const idRoom = this.idRoom
       const idUser = this.idLogin

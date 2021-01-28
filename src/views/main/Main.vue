@@ -139,7 +139,7 @@
             <div class="d-flex justify-content-between mt-3" v-for="data in allFriend" :key="data.id">
               <div class="card-left d-flex">
                 <div class="photo">
-                  <img :src="data.friendPhoto" alt="photo-friend">
+                  <img :src="data.friendPhoto" alt="photo-friend" @error="handlePlaceholderImg">
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.friendName}}</h5>
@@ -177,7 +177,7 @@
               </thead>
               <tbody>
                 <tr v-for="(data, index) in allGroupChat" :key="index">
-                  <td class="table-photo-room"><img :src="data.photoRoom" alt="photoRoom" ></td>
+                  <td class="table-photo-room"><img :src="data.photoRoom" alt="photoRoom" @error="handlePlaceholderImg"></td>
                   <td>{{data.nameRoom}}</td>
                   <td><div class="btn btn-danger" ref="destroyRoom" @click="handleDeleteRoom(data.idRoom)">Delete</div></td>
                 </tr>
@@ -198,7 +198,7 @@
             <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
               <div class="card-left d-flex">
                 <div class="photo">
-                  <img :src="data.photo" alt="">
+                  <img :src="data.photo" alt="All Contact" @error="handlePlaceholderImg">
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.name}}</h5>
@@ -240,7 +240,7 @@
             <div class="hover-chat d-flex justify-content-between mt-3" v-else v-for="data in allFriend" :key="data.id">
               <div class="card-left d-flex" @click="handleProfileUser(data.friendId)">
                 <div class="photo">
-                  <img :src="data.friendPhoto" alt="photo-friend">
+                  <img :src="data.friendPhoto" alt="photo-friend" @error="handlePlaceholderImg">
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.friendName}}</h5>
@@ -255,7 +255,7 @@
             <div class="list-room hover-chat" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
               <div class="room-left d-flex">
                 <div class="icon-room">
-                  <img :src="data.photoRoom" alt="Image Room">
+                  <img :src="data.photoRoom" alt="Image Room" @error="handlePlaceholderImg">
                 </div>
                 <div class="room-name ml-2">
                   <h5>{{data.nameRoom}}</h5>
@@ -322,6 +322,9 @@ export default {
   },
   methods: {
     ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup', 'createRoomChat', 'deleteRoom']),
+    handlePlaceholderImg (e) {
+      e.target.src = 'https://via.placeholder.com/300'
+    },
     toHome () {
       this.getGroupChat()
       this.getAllFriend({ name: '' })
