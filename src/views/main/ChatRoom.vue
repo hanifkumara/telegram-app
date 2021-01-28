@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <h4 v-else>Hello brow</h4>
+    <div v-else class="chat-room-null"><h4>Please select a chat to start messaging</h4></div>
   </div>
 </template>
 
@@ -245,5 +245,14 @@ export default {
 }
 .badge-danger{
   cursor: pointer
+}
+.chat-room-null{
+  height: 100vh;
+  width: 100%;
+  color: rgb(179, 171, 171);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
 }
 </style>

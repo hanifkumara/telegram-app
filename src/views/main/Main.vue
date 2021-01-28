@@ -66,7 +66,7 @@
             <div class="middle-menu-toggle">
               <h4 style="color: #7E98DF; margin-bottom: 20px;">{{myProfile.username}}</h4>
               <label class="img-profile-toggle">
-                <img :src="myProfile.photo" alt="profile-user">
+                <img :src="myProfile.photo" alt="profile-user" @error="handlePlaceholderImg">
                 <input type="file" @change="hanldeUpload"/>
               </label>
               <h4>{{myProfile.name}}</h4>
@@ -192,7 +192,8 @@
                 </div>
                 <h4 style="padding-top: 10px; margin-left: 15px;">All users TelegramApp</h4>
               </div>
-              <input type="text" placeholder="Search users name . . ." v-model="searchUser" class="form-control">
+              <p class="mt-3 mb-2 text-info" style="font-size: 13px">note: please input name user for add friend</p>
+              <input type="text" placeholder="Search user . . ." v-model="searchUser" class="form-control">
             </div>
             <hr>
             <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
