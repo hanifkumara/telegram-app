@@ -1,7 +1,22 @@
-# Telegram App
+<br>
+
 <p align="center">
+  <h3 align="center">Chats App</h3>
   <p align="center">
     <image align="center" width="200" src='./screenshots/logo.PNG' />
+  </p>
+</p>
+
+<p align="center">
+    <br />
+    <a href="https://github.com/hanifkumara/telegram-app"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://chat-app-hanif.netlify.app">View Demo</a>
+    ·
+    <a href="https://github.com/hanifkumara/telegram-app/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/hanifkumara/telegram-app/issues">Request Feature</a>
   </p>
 </p>
 
@@ -10,32 +25,40 @@
 * [About the Project](#about-the-project)
   * [Built With](#built-with)
 * [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-  * [Project setup](#project-setup)
   * [Compiles and hot-reloads for development](#compiles-and-hot-reloads-for-development)
   * [Lints and fixes files](#lints-and-fixes-files)
   * [Customize configuration](#customize-configuration)
 * [Screenshots](#screenshots)
+* [Related Project](#related-project-backend)
 * [Contact](#contact)
 
 ## About the Project
 TelegramApp is a simple chat realtime, chat private as well as chat group. Have some features that is signup, login, add contact, delete contact, search, maps, edit profile, chat realtime
 
 ### Built With
-VueJS
-```sh
-https://vuejs.org/
-```
+This is an example of how to list things you need to use the software and how to install them.
+
+* [Express](https://expressjs.com/)
+
+* [VueJS](https://vuejs.org/)
+
+* [Bootstrap](https://nodejs.org/en/download/)
 
 ## Getting Started
-Lets gets you started
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+
+* [nodejs](https://nodejs.org/en/download/)
 
 ### Installation
 
 1. Clone the repo
-
 ```sh
-git clone https://github.com/hanifkumara/telegram-app
+git clone https://github.com/hanifkumara/telegram-app.git
 ```
 2. Install NPM packages
 
@@ -43,9 +66,10 @@ git clone https://github.com/hanifkumara/telegram-app
 npm install
 ```
 
-## Project setup
-```
-npm install
+3. Add .env file at root folder project, and add following
+```sh
+VUE_APP_SERVICE_API= http://localhost:5000/api/v1
+VUE_APP_SOCKET_URL= http://localhost:5000
 ```
 
 ### Compiles and hot-reloads for development
