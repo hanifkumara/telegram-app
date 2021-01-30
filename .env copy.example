@@ -1,0 +1,2 @@
+VUE_APP_SERVICE_API= http://localhost:5000/api/v1
+VUE_APP_SOCKET_URL= http://localhost:5000

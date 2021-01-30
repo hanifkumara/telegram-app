@@ -87,7 +87,6 @@ const routes = [
     path: '/main',
     name: 'Main',
     component: Main,
-    redirect: '/main/chat-list',
     meta: { requiresAuth: true },
     children: [
       {
