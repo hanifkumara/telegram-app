@@ -112,4 +112,6 @@ Contributions are what make the open source community such an amazing place to b
 ## Contact
 My Email : hanifkumara00@gmail.com
 
+LinkedIn : [https://www.linkedin.com/in/hanifkumara/](https://www.linkedin.com/in/hanifkumara/)
+
 Project Link: [https://github.com/hanifkumara/telegram-app](https://github.com/hanifkumara/telegram-app)
