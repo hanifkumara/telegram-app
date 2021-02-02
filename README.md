@@ -32,7 +32,7 @@
   * [Customize configuration](#customize-configuration)
 * [Screenshots](#screenshots)
 * [Contributing](#contributing)
-* [Related Project](#related-project-backend)
+* [Project Related](#project-related)
 * [Contact](#contact)
 
 ## About the Project
