@@ -31,7 +31,8 @@
   * [Lints and fixes files](#lints-and-fixes-files)
   * [Customize configuration](#customize-configuration)
 * [Screenshots](#screenshots)
-* [Related Project](#related-project-backend)
+* [Contributing](#contributing)
+* [Project Related](#project-related)
 * [Contact](#contact)
 
 ## About the Project
@@ -108,6 +109,10 @@ Contributions are what make the open source community such an amazing place to b
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request   
+ 
+## Project Related
+
+[https://github.com/hanifkumara/telegram-app-api](https://github.com/hanifkumara/telegram-app-api)
  
 ## Contact
 My Email : hanifkumara00@gmail.com
