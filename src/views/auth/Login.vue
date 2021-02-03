@@ -19,7 +19,7 @@
         <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
     <h5 class="forgot-password" @click="toForgotPassword">Forgot password?</h5>
-    <Button title="Login" background="primary"/>
+    <Button title="Login" :loading="loading" background="primary"/>
     </form>
     <div class="login-with d-flex justify-content-between align-items-center">
       <div class="line"></div>
@@ -46,7 +46,8 @@ export default {
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      loading: false
     }
   },
   methods: {
@@ -83,12 +84,14 @@ export default {
           'error'
         )
       } else {
+        this.loading = true
         const payload = {
           email: this.email,
           password: this.password
         }
         this.login(payload)
           .then((res) => {
+            this.loading = false
             Swal.fire(
               'Login Success!!',
               '',
@@ -97,6 +100,7 @@ export default {
             this.$router.push({ name: 'Main' })
           })
           .catch((err) => {
+            this.loading = false
             let message = ''
             if (err === 'Email Unlisted!!') {
               message = err
@@ -105,9 +109,9 @@ export default {
             }
             console.log(err)
             Swal.fire(
-              `${message}`,
-              '',
-              'error'
+            `${message}`,
+            '',
+            'error'
             )
           })
       }

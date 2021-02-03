@@ -24,7 +24,7 @@
         </div>
         <p class="text-danger" v-if="password.length >= 1 && password.length <= 5">length password must be more than 5 char</p>
       </div>
-      <Button title="Register" background="primary" />
+      <Button title="Register" :loading="loading" background="primary" />
       <div class="register-with d-flex justify-content-between align-items-center">
         <div class="line"></div>
         <p style="color: #848484;">Register With</p>
@@ -50,7 +50,8 @@ export default {
     return {
       name: '',
       email: '',
-      password: ''
+      password: '',
+      loading: false
     }
   },
   mixins: [showPass],
@@ -104,6 +105,7 @@ export default {
           'error'
         )
       } else {
+        this.loading = true
         const payload = {
           name: this.name,
           email: this.email,
@@ -112,8 +114,10 @@ export default {
         this.signup(payload)
           .then((result) => {
             console.log(result)
+            this.loading = false
           })
           .catch((err) => {
+            this.loading = false
             Swal.fire(
               err.message,
               '',
