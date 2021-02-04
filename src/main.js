@@ -12,6 +12,10 @@ import { BootstrapVue } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Toasted from 'vue-toasted'
+import VEmojiPicker from 'v-emoji-picker'
+
+Vue.config.productionTip = false
+Vue.use(VEmojiPicker)
 
 Vue.use(Toasted)
 

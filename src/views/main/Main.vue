@@ -16,13 +16,13 @@
               </div>
               <h6>Settings</h6>
             </div>
-            <div class="popup contacts" @click="handleContactButton = !handleContactButton">
+            <div class="popup contacts" @click="handleContactButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Contacts.png" alt="icon-contact">
               </div>
               <h6>Contacts</h6>
             </div>
-            <div class="popup contacts" @click="handleGroupButton = !handleGroupButton">
+            <div class="popup contacts" @click="handleGroupButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Contacts.png" alt="icon-contact">
               </div>
@@ -40,7 +40,7 @@
               </div>
               <h6>Save Messages</h6>
             </div> -->
-            <div class="popup invite-friend" @click="handleInviteButton = !handleInviteButton">
+            <div class="popup invite-friend" @click="handleInviteButton">
               <div class="icon-popup">
                 <img src="@/assets/img/Invite friends.png" alt="icon-invite-friend">
               </div>
@@ -129,9 +129,9 @@
                 </GmapMap>
             <h6 class="mt-2" style="cursor: pointer;" @click.prevent="handleLogout">Logout</h6>
           </div>
-          <div class="my-contact"  v-show="handleContactButton">
+          <div class="my-contact" v-show="contactButton">
             <div class="d-flex align-items-center mt-10">
-                <div class="icon-back" @click="handleContactButton = !handleContactButton">
+                <div class="icon-back" @click="handleContactButton">
                   <img src="@/assets/img/back.png" alt="Back Icon">
                 </div>
                 <h4 style="padding-top: 10px; margin-left: 15px;">My Contact</h4>
@@ -157,9 +157,9 @@
             </div>
             </div>
           </div>
-          <div class="container-group" v-show="handleGroupButton">
+          <div class="container-group" v-show="groupButton">
             <div class="d-flex align-items-center">
-              <div class="icon-back" @click="handleGroupButton = !handleGroupButton">
+              <div class="icon-back" @click="handleGroupButton">
                 <img src="@/assets/img/back.png" alt="Back Icon">
               </div>
               <h5 style="margin-left: 20px;">Create New Group</h5>
@@ -184,10 +184,10 @@
               </tbody>
             </table>
           </div>
-          <div class="container-add-contact" v-show="handleInviteButton">
+          <div class="container-add-contact" v-show="inviteButton">
             <div class="title-add-contact">
               <div class="d-flex align-items-center mt-10">
-                <div class="icon-back" @click="handleInviteButton = !handleInviteButton">
+                <div class="icon-back" @click="handleInviteButton">
                   <img src="@/assets/img/back.png" alt="Back Icon">
                 </div>
                 <h4 style="padding-top: 10px; margin-left: 15px;">All users TelegramApp</h4>
@@ -196,24 +196,29 @@
               <input type="text" placeholder="Search user . . ." v-model="searchUser" class="form-control">
             </div>
             <hr>
-            <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
-              <div class="card-left d-flex">
-                <div class="photo">
-                  <img :src="data.photo" alt="All Contact" @error="handlePlaceholderImg">
+            <div v-if="allContact" >
+              <div class="d-flex justify-content-between mt-3" v-for="data in allContact" :key="data.id">
+                <div class="card-left d-flex">
+                  <div class="photo">
+                    <img :src="data.photo" alt="All Contact" @error="handlePlaceholderImg">
+                  </div>
+                  <div class="name-chat mx-2">
+                    <h5>{{data.name}}</h5>
+                    <p v-if="!data.username">{{data.email}}</p>
+                    <p>{{data.username}}</p>
+                  </div>
                 </div>
-                <div class="name-chat mx-2">
-                  <h5>{{data.name}}</h5>
-                  <p v-if="!data.username">{{data.email}}</p>
-                  <p>{{data.username}}</p>
-                </div>
-              </div>
-              <div class="time-chat">
-                <div @click="handleInvite(data.id)">
-                  <div class="add-friend">
-                    <img src="@/assets/img/icons8-add-user-group-man-man-50.png" alt="add-friend">
+                <div class="time-chat">
+                  <div @click="handleInvite(data.id)">
+                    <div class="add-friend">
+                      <img src="@/assets/img/icons8-add-user-group-man-man-50.png" alt="add-friend">
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div v-else>
+              <h6 class="text-danger text-center">User not found</h6>
             </div>
           </div>
           <div class="input-search my-3 d-flex justify-content-between align-items-center">
@@ -312,11 +317,11 @@ export default {
         lng: 0
       },
       idRoom: '',
-      handleGroupButton: false,
+      groupButton: false,
       nameGroup: '',
       handlePopupButton: false,
-      handleInviteButton: false,
-      handleContactButton: false,
+      inviteButton: false,
+      contactButton: false,
       handleProfileButton: false,
       buttonInvite: false
     }
@@ -325,6 +330,49 @@ export default {
     ...mapActions(['getAllContact', 'getProfileUser', 'getMyProfile', 'updateMyProfile', 'historyChatPrivate', 'getAllFriend', 'logout', 'addFriend', 'getGroupChat', 'historyChatRoom', 'getDetailGroup', 'addMemberGroup', 'createRoomChat', 'deleteRoom']),
     handlePlaceholderImg (e) {
       e.target.src = 'https://via.placeholder.com/300'
+    },
+    async handleGuide () {
+      Swal.mixin({
+        confirmButtonText: 'Next &rarr;',
+        width: 800,
+        showCancelButton: true,
+        progressSteps: ['1', '2', '3']
+      }).queue([
+        {
+          html: `<img src="https://i.ibb.co/WGY21kW/mergesetting.jpg" alt="mergesetting" border="0" style="width: 100%;">
+          <p style="margin-top: 10px; font-size: 13px"><span style="font-weight: 600;">note: </span>please click -> edit -> enter for save changes</p>
+          `
+        },
+        {
+          html: '<img src="https://i.ibb.co/XXGZfkj/mergeaddfriend.jpg" alt="mergeaddfriend" border="0" style="width: 100%;">'
+        },
+        {
+          html: '<img src="https://i.ibb.co/xX3s6rH/mergechat.jpg" alt="mergechat" border="0" style="width: 100%">'
+        }
+      ]).then((result) => {
+        if (result.value) {
+          Swal.fire({
+            title: 'All done!',
+            text: 'Enjoy the application :)',
+            confirmButtonText: 'Lovely!'
+          })
+        }
+      })
+    },
+    handleInviteButton () {
+      this.getAllFriend({ name: '' })
+      this.getGroupChat()
+      this.inviteButton = !this.inviteButton
+    },
+    handleGroupButton () {
+      this.getAllFriend({ name: '' })
+      this.getGroupChat()
+      this.groupButton = !this.groupButton
+    },
+    handleContactButton () {
+      this.getAllFriend({ name: '' })
+      this.getGroupChat()
+      this.contactButton = !this.contactButton
     },
     toHome () {
       this.getGroupChat()
@@ -535,6 +583,7 @@ export default {
     }
   },
   mounted () {
+    this.handleGuide()
     const sender = localStorage.getItem('id')
     const receiver = this.idFriend
     this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })

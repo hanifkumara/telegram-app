@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-chat-private">
     <div class="top-menu d-flex justify-content-between align-items-center" v-if="dataProfile.photo">
       <div class="menu-left">
         <div class="photo-name d-flex">
@@ -52,7 +52,7 @@
     </div>
     <div class="content-chat" ref="messageBody" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="looping" v-for="(data, index) in chatHistory" :key="index">
-        <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin ">
+        <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin">
           <div class="icon-profile-left">
             <img :src="dataProfile.photo" alt="receiver-photo" @error="handlePlaceholderImg">
           </div>
@@ -70,6 +70,9 @@
         </div>
       </div>
     </div>
+    <div class="emoji" v-show="showEmoji">
+      <VEmojiPicker emojiSize=30 limitFrequently=8 @select="selectEmoji" />
+    </div>
     <div class="bottom-chat" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="input-chat">
         <input type="text" placeholder="Input your message . . ."  v-model="inputMessage" @keypress.enter="handleEmit">
@@ -77,7 +80,7 @@
           <div class="set-size">
             <img src="@/assets/img/Plus.png" alt="chat-plus">
           </div>
-          <div class="set-size">
+          <div class="set-size" @click="showEmoji = !showEmoji">
             <img src="@/assets/img/Vector2.png" alt="chat-emot">
           </div>
           <div class="set-size">
@@ -103,7 +106,8 @@ export default {
       location: {
         lat: this.dataProfile.locationLat,
         lng: this.dataProfile.locationLng
-      }
+      },
+      showEmoji: false
     }
   },
   methods: {
@@ -125,6 +129,9 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+    selectEmoji (emoji) {
+      this.inputMessage += emoji.data
     },
     handleEmit () {
       const receiver = this.dataProfile.id
@@ -287,6 +294,14 @@ export default {
   object-fit: contain;
   width: 100%;
   height: 100%;
+}
+.container-chat-private{
+  position: relative
+}
+.emoji{
+  position: absolute;
+  right: 45px;
+  bottom: 75px;
 }
 @media screen and (max-width: 786px) {
   .content-chat {

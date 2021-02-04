@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="shortDetail.photoRoom">
+    <div v-if="shortDetail.photoRoom" class="container-chat-room">
       <div class="top-menu">
         <div class="menu-left">
           <div class="photo-name d-flex align-items-center">
@@ -58,12 +58,15 @@
           </div>
         </div>
       </div>
+      <div class="emoji" v-show="showEmoji">
+        <VEmojiPicker emojiSize=30 limitFrequently=8 @select="selectEmoji" />
+      </div>
       <div class="bottom-chat">
         <div class="input-message">
           <input type="text" class="form-control" v-model="inputMessage" placeholder="Type your message . . ." @keypress.enter="handleEmit">
           <div class="icon-input">
             <img src="@/assets/img/Plus.png" alt="icon plus">
-            <img src="@/assets/img/Vector2.png" alt="icon stiker">
+            <img src="@/assets/img/Vector2.png" alt="icon stiker" @click="showEmoji = !showEmoji">
             <img src="@/assets/img/Group 181.png" alt="icon record">
           </div>
         </div>
@@ -82,7 +85,8 @@ export default {
   data () {
     return {
       idLogin: localStorage.getItem('id'),
-      inputMessage: ''
+      inputMessage: '',
+      showEmoji: false
     }
   },
   props: ['socket', 'id-room', 'chat-room', 'detail-group', 'short-detail'],
@@ -96,6 +100,9 @@ export default {
       const idUser = this.idLogin
       this.socket.emit('messageRoom', { idUser, idRoom, message: this.inputMessage, nameRoom: this.shortDetail.titleGroup })
       this.inputMessage = ''
+    },
+    selectEmoji (emoji) {
+      this.inputMessage += emoji.data
     },
     handleHistoryRoom () {
       this.historyChatRoom({ idRoom: this.idRoom })
@@ -254,5 +261,13 @@ export default {
   justify-content: center;
   align-items: center;
   border: 1px solid;
+}
+.container-chat-room{
+  position: relative;
+}
+.emoji{
+  position: absolute;
+  right: 45px;
+  bottom: 75px;
 }
 </style>

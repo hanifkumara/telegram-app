@@ -16,6 +16,7 @@
     "register-service-worker": "^1.7.1",
     "socket.io-client": "^3.0.4",
     "sweetalert2": "^10.12.6",
+    "v-emoji-picker": "^2.3.3",
     "vue": "^2.6.12",
     "vue-browser-geolocation": "^1.8.0",
     "vue-chat-emoji": "^1.1.27",
