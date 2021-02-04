@@ -61,10 +61,10 @@ This is an example of how to list things you need to use the software and how to
 ```sh
 git clone https://github.com/hanifkumara/telegram-app.git
 ```
-2. Install NPM packages
+2. Install Yarn packages
 
 ```sh
-npm install
+yarn install
 ```
 
 3. Add .env file at root folder project, and add following
@@ -75,17 +75,17 @@ VUE_APP_SOCKET_URL= http://localhost:5000
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+yarn run serve
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+yarn run build
 ```
 
 ### Lints and fixes files
 ```
-npm run lint
+yarn run lint
 ```
 
 ### Customize configuration
