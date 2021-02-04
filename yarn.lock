@@ -2889,6 +2889,11 @@ core-js@^2.4.0:
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
   integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
+core-js@^3.6.4:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.8.3.tgz#c21906e1f14f3689f93abcc6e26883550dd92dd0"
+  integrity sha512-KPYXeVZYemC2TkNEkX/01I+7yd+nX3KddKwZ1Ww7SKWdI2wQprSgLmrTddT8nw92AjEklTsPBoSdQBhbI1bQ6Q==
+
 core-js@^3.6.5:
   version "3.8.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.8.1.tgz#f51523668ac8a294d1285c3b9db44025fda66d47"
@@ -9102,6 +9107,13 @@ vue-browser-geolocation@^1.8.0:
   integrity sha512-fI9fqQg1v5HP5LUR3juWIvWRIlyrqYrGDmXB8aux+mLnOV4V9c423InmTFK3UyRS0yHoBUGNIWO0GVufeczfNw==
   dependencies:
     vue "^2.0.1"
+
+vue-chat-emoji@^1.1.27:
+  version "1.1.27"
+  resolved "https://registry.yarnpkg.com/vue-chat-emoji/-/vue-chat-emoji-1.1.27.tgz#67f7681f1248f1fd55965cbfc02a26568b15e5b5"
+  integrity sha512-we+PH4yJr71ZWnUkKnk2XMjhErL3c5s25EKQTvtQyWVw6z2gGJRRlFQdaTR5+9u4fD9njOMewnczqCbrkyoFsg==
+  dependencies:
+    core-js "^3.6.4"
 
 vue-eslint-parser@^7.0.0:
   version "7.3.0"

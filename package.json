@@ -18,6 +18,7 @@
     "sweetalert2": "^10.12.6",
     "vue": "^2.6.12",
     "vue-browser-geolocation": "^1.8.0",
+    "vue-chat-emoji": "^1.1.27",
     "vue-router": "^3.2.0",
     "vue-toasted": "^1.1.28",
     "vue2-google-maps": "^0.10.7",

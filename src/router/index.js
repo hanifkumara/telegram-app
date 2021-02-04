@@ -14,6 +14,7 @@ import Map2 from '../views/map/Map2.vue'
 import ChatList from '../views/main/ChatList.vue'
 import ChatRoom from '../views/main/ChatRoom.vue'
 import LoginDev from '../views/login/LoginDev.vue'
+import Emoji from '../views/Emoji.vue'
 import store from '../store/index'
 import Swal from 'sweetalert2'
 
@@ -48,6 +49,11 @@ const routes = [
     path: '/room',
     name: 'Room',
     component: Room
+  },
+  {
+    path: '/emoji-dev',
+    name: 'Emoji',
+    component: Emoji
   },
   {
     path: '/auth',
