@@ -333,6 +333,7 @@ export default {
     },
     async handleGuide () {
       Swal.mixin({
+        title: 'User Guide',
         confirmButtonText: 'Next &rarr;',
         width: 800,
         showCancelButton: true,
@@ -583,18 +584,30 @@ export default {
     }
   },
   mounted () {
-    this.handleGuide()
     const sender = localStorage.getItem('id')
     const receiver = this.idFriend
     this.socket.emit('initialUser', { idSender: sender, idReceiver: receiver, idLogin: sender })
     this.getMyProfile()
+      .then((result) => {
+        if (this.myProfile.userGuide === 'already') {
+          console.log('already')
+        } else {
+          this.handleGuide()
+          console.log('not already')
+        }
+        console.log('ini my profile', result)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     this.$getLocation()
       .then(coordinates => {
         this.location.lat = coordinates.lat
         this.location.lng = coordinates.lng
         const data = {
           locationLat: coordinates.lat,
-          locationLng: coordinates.lng
+          locationLng: coordinates.lng,
+          userGuide: 'already'
         }
         this.updateMyProfile(data)
           .then((result) => {

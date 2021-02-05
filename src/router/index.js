@@ -145,7 +145,7 @@ router.beforeEach((to, from, next) => {
       Swal.fire(
         'You already logged in!!',
         '',
-        'error'
+        'warning'
       )
       next({
         path: '/main/chat-list'
