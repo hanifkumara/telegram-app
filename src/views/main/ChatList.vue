@@ -83,8 +83,11 @@
           <div class="set-size" @click="showEmoji = !showEmoji">
             <img src="@/assets/img/Vector2.png" alt="chat-emot">
           </div>
-          <div class="set-size">
+          <div class="set-size chat-record">
             <img src="@/assets/img/Group 181.png" alt="chat-record">
+          </div>
+          <div class="set-size-send" @click="handleEmit">
+            <img src="@/assets/img/74-749231_png-file-svg-send-message-icon-png-transparent-removebg.png" alt="Send Icon">
           </div>
         </div>
       </div>
@@ -224,6 +227,16 @@ export default {
   width: 100%;
   height: 100%;
 }
+.set-size-send{
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+.set-size-send > img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
 .photo-chat-modal{
   width: 80px;
   height: 80px;
@@ -303,10 +316,16 @@ export default {
   right: 45px;
   bottom: 75px;
 }
-@media screen and (max-width: 786px) {
+@media screen and (max-width: 768px) {
   .content-chat {
     height: 480px;
     font-size: 18px;
+  }
+  .set-size-send{
+    display: block
+  }
+  .chat-record{
+    display: none;
   }
 }
 @media screen and (max-width: 480px) {

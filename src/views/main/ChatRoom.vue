@@ -68,6 +68,9 @@
             <img src="@/assets/img/Plus.png" alt="icon plus">
             <img src="@/assets/img/Vector2.png" alt="icon stiker" @click="showEmoji = !showEmoji">
             <img src="@/assets/img/Group 181.png" alt="icon record">
+            <div class="set-size-send" @click="handleEmit">
+              <img src="@/assets/img/74-749231_png-file-svg-send-message-icon-png-transparent-removebg.png" alt="Send Icon">
+            </div>
           </div>
         </div>
       </div>
@@ -269,5 +272,23 @@ export default {
   position: absolute;
   right: 45px;
   bottom: 75px;
+}
+.set-size-send{
+  display: none;
+  width: 22px;
+  height: 22px
+}
+.set-size-send > img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+@media screen and (max-width: 768px) {
+  .set-size-send {
+    display: block;
+  }
+  [alt="icon record"]{
+    display: none;
+  }
 }
 </style>

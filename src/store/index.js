@@ -340,10 +340,12 @@ export default new Vuex.Store({
       }, function (error) {
         if (error.response.status === 401) {
           if (error.response.data.err.message === 'Invalid Token') {
+            Swal.fire(error.response.data.err.message, 'Please login again', 'error')
             localStorage.clear()
             context.commit('REMOVE_TOKEN')
             router.push({ name: 'Login' })
           } else if (error.response.data.err.message === 'Token Expired') {
+            Swal.fire(error.response.data.err.message, 'Please login again', 'error')
             localStorage.clear()
             context.commit('REMOVE_TOKEN')
             router.push({ name: 'Login' })
