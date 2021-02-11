@@ -17,6 +17,8 @@ import VEmojiPicker from 'v-emoji-picker'
 Vue.config.productionTip = false
 Vue.use(VEmojiPicker)
 
+Vue.use(require('vue-moment'))
+
 Vue.use(Toasted)
 
 Vue.use(BootstrapVue)

@@ -48,13 +48,21 @@
       <div class="content-chat" ref="messageBody">
         <div v-for="data in chatRoom" :key="data.id">
           <div class="chat-right" v-if="data.idUser === idLogin">
+            <div class="time-chat mr-2">
+              {{data.createdAt | moment('calendar')}}
+            </div>
             <div class="message-right">
               <h6>{{data.message}}</h6>
             </div>
           </div>
-          <div class="chat-left" v-else>
-            <p>{{data.nameMember}}</p>
-            <h6>{{data.message}}</h6>
+          <div class="d-flex align-items-center" v-else>
+            <div class="chat-left">
+              <p>{{data.nameMember}}</p>
+              <h6>{{data.message}}</h6>
+            </div>
+            <div class="time-chat ml-2">
+              {{data.createdAt | moment('calendar')}}
+            </div>
           </div>
         </div>
       </div>
@@ -208,6 +216,7 @@ export default {
 .chat-right{
   display: flex;
   justify-content: flex-end;
+  align-items:center;
 }
 .message-right{
   width: fit-content;
@@ -282,6 +291,10 @@ export default {
   object-fit: contain;
   width: 100%;
   height: 100%;
+}
+.time-chat{
+  font-weight: 700;
+  font-size: 11px;
 }
 @media screen and (max-width: 768px) {
   .set-size-send {

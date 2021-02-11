@@ -52,15 +52,21 @@
     </div>
     <div class="content-chat" ref="messageBody" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="looping" v-for="(data, index) in chatHistory" :key="index">
-        <div class="chat-time-img d-flex align-items-end" v-if="data.status === 'sender' || data.idReceiver === idLogin">
+        <div class="chat-time-img d-flex align-items-center" v-if="data.status === 'sender' || data.idReceiver === idLogin">
           <div class="icon-profile-left">
             <img :src="dataProfile.photo" alt="receiver-photo" @error="handlePlaceholderImg">
           </div>
           <div class="card-message-left mt-2">
             <h5>{{data.message}}</h5>
           </div>
+          <div class="time-chat ml-2">
+            {{data.createdAt | moment('calendar')}}
+          </div>
         </div>
-        <div class="container-message-right d-flex justify-content-end" v-else>
+        <div class="container-message-right d-flex justify-content-end align-items-center" v-else>
+          <div class="time-chat mr-2">
+            {{data.createdAt | moment('calendar')}}
+          </div>
           <div class="card-message-right mt-2">
             <h5>{{data.message}}</h5>
           </div>
@@ -315,6 +321,10 @@ export default {
   position: absolute;
   right: 45px;
   bottom: 75px;
+}
+.time-chat{
+  font-weight: 700;
+  font-size: 11px;
 }
 @media screen and (max-width: 768px) {
   .content-chat {
