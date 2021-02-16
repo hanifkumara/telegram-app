@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="row">
+    <div class="row wrapper-content">
       <div class="col-md-4">
         <div class="content-left">
           <div class="title-left d-flex justify-content-between align-items-center">
@@ -250,12 +250,12 @@
                 </div>
                 <div class="name-chat mx-2">
                   <h5>{{data.friendName}}</h5>
-                  <p>Chat private</p>
+                  <p>{{data.message}}</p>
                 </div>
               </div>
               <div class="time-chat">
-                <h6></h6>
-                <div class="count-new-chat"></div>
+                <h6>{{data.timeChat | moment('LT')}}</h6>
+                <!-- <div class="count-new-chat"></div> -->
               </div>
             </div>
             <div class="list-room hover-chat" v-for="data in allGroupChat" :key="data.id" @click="handleDataGroup(data.idRoom)">
@@ -276,9 +276,9 @@
           </div>
         </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-8" v-show="containerChat">
         <div class="content-right">
-          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory" :detail-group="detailGroup" :short-detail="shortDetail" v-on:handle-notif="handleNotif"/>
+          <router-view :socket="socket" :data-profile="profileUser" :my-profile="myProfile" :id-friend="idFriend" :id-room="idRoom" :chat-room="chatRoomHistory" :detail-group="detailGroup" :short-detail="shortDetail" v-on:handle-notif="handleNotif" v-on:container-chat="handleContainerChat"/>
         </div>
       </div>
     </div>
@@ -323,7 +323,8 @@ export default {
       inviteButton: false,
       contactButton: false,
       handleProfileButton: false,
-      buttonInvite: false
+      buttonInvite: false,
+      containerChat: false
     }
   },
   methods: {
@@ -361,6 +362,7 @@ export default {
       })
     },
     handleInviteButton () {
+      console.log('hello invite button')
       this.getAllFriend({ name: '' })
       this.getGroupChat()
       this.inviteButton = !this.inviteButton
@@ -456,7 +458,11 @@ export default {
           console.log(err)
         })
     },
+    handleContainerChat (params) {
+      this.containerChat = params
+    },
     handleProfileUser (id) {
+      this.containerChat = true
       this.idFriend = id
       const payload = {
         idReceiver: id
@@ -551,6 +557,7 @@ export default {
         })
     },
     handleDataGroup (idRoom) {
+      this.containerChat = true
       console.log('ini idroom', idRoom)
       this.socket.emit('initialRoom', idRoom)
       this.idRoom = idRoom
@@ -1000,5 +1007,16 @@ input#username{
 }
 .hover-chat:hover{
   transform: scale(1.01)
+}
+.wrapper-content{
+  position: relative;
+}
+@media screen and (max-width: 767px) {
+  .col-md-8{
+    position: absolute;
+    top: 0;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
 }
 </style>

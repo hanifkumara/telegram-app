@@ -4,6 +4,9 @@
       <div class="top-menu">
         <div class="menu-left">
           <div class="photo-name d-flex align-items-center">
+            <div class="wrapper-icon" @click="$emit('container-chat', false)">
+              <img src="@/assets/img/back.png" alt="Icon Back">
+            </div>
             <div class="photo-chat">
               <img :src="shortDetail.photoRoom" alt="photo-profile" @error="handlePlaceholderImg">
             </div>
@@ -168,7 +171,11 @@ export default {
 
 <style scoped>
 .top-menu {
+  background-color: #fff;
   padding: 20px 40px;
+}
+.photo-name > .photo-chat {
+  margin-left: 10px;
 }
 .content-chat {
   height: 480px;
@@ -296,12 +303,25 @@ export default {
   font-weight: 700;
   font-size: 11px;
 }
-@media screen and (max-width: 768px) {
+.wrapper-icon{
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+.wrapper-icon > img{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+@media screen and (max-width: 767px) {
   .set-size-send {
     display: block;
   }
   [alt="icon record"]{
     display: none;
+  }
+  .wrapper-icon{
+    display: block;
   }
 }
 </style>

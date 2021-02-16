@@ -1,7 +1,10 @@
 <template>
   <div class="container-chat-private">
     <div class="top-menu d-flex justify-content-between align-items-center" v-if="dataProfile.photo">
-      <div class="menu-left">
+      <div class="menu-left d-flex align-items-center">
+        <div class="wrapper-icon" @click="$emit('container-chat', false)">
+          <img src="@/assets/img/back.png" alt="Icon Back">
+        </div>
         <div class="photo-name d-flex">
           <div class="photo-chat">
             <img :src="dataProfile.photo" alt="photo-profile" @error="handlePlaceholderImg">
@@ -82,8 +85,8 @@
     <div class="bottom-chat" v-if="dataProfile.photo" @error="handlePlaceholderImg">
       <div class="input-chat">
         <input type="text" placeholder="Input your message . . ."  v-model="inputMessage" @keypress.enter="handleEmit">
-        <div class="icon-chat d-flex justify-content-between">
-          <div class="set-size">
+        <div class="icon-chat">
+          <div class="set-size chat-plus">
             <img src="@/assets/img/Plus.png" alt="chat-plus">
           </div>
           <div class="set-size" @click="showEmoji = !showEmoji">
@@ -106,7 +109,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'ChatList',
-  props: ['data-profile', 'socket', 'my-profile', 'id-friend'],
+  props: ['data-profile', 'socket', 'my-profile', 'id-friend', 'container-chat'],
   data () {
     return {
       inputMessage: '',
@@ -120,8 +123,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['historyChatPrivate']),
-    // const result = res.data.result
+    ...mapActions(['historyChatPrivate', 'getAllFriend']),
+    pushToHome () {
+      this.$router.push({ name: 'Main' })
+    },
     handlePlaceholderImg (e) {
       e.target.src = 'https://dummyimage.com/600x600/c4bac4/525252.jpg&text=Chat+Private'
     },
@@ -143,6 +148,7 @@ export default {
       this.inputMessage += emoji.data
     },
     handleEmit () {
+      this.getAllFriend({ name: '' })
       const receiver = this.dataProfile.id
       const sender = localStorage.getItem('id')
       this.socket.emit('messagePrivate', { idSender: sender, idReceiver: receiver, message: this.inputMessage, name: this.myProfile.name })
@@ -155,6 +161,7 @@ export default {
     })
     this.socket.on('sendBack', data => {
       this.handleHistory()
+      this.getAllFriend({ name: '' })
     })
   },
   watch: {
@@ -176,6 +183,7 @@ export default {
 
 <style scoped>
 .top-menu {
+  background-color: #fff;
   padding: 20px 40px;
 }
 .photo-chat{
@@ -219,6 +227,8 @@ export default {
   outline: none;
 }
 .icon-chat{
+  display: flex;
+  justify-content: space-between;
   position: absolute;
   right: 30px;
   bottom: 17px;
@@ -315,7 +325,7 @@ export default {
   height: 100%;
 }
 .container-chat-private{
-  position: relative
+  position: relative;
 }
 .emoji{
   position: absolute;
@@ -326,7 +336,23 @@ export default {
   font-weight: 700;
   font-size: 11px;
 }
-@media screen and (max-width: 768px) {
+.wrapper-icon{
+  display: none;
+  width: 20px;
+  height: 20px;
+}
+.wrapper-icon > img{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+@media screen and (max-width: 767px) {
+  .wrapper-icon{
+    display: block;
+  }
+  .photo-name{
+    margin-left: 10px;
+  }
   .content-chat {
     height: 480px;
     font-size: 18px;
@@ -337,12 +363,23 @@ export default {
   .chat-record{
     display: none;
   }
+  .top-menu {
+    background-color: #fff;
+    padding-left: 15px;
+    margin-right: 10px;
+  }
 }
 @media screen and (max-width: 480px) {
+  .icon-chat{
+    justify-content: flex-end;
+  }
+  .set-size-send{
+    margin-left: 8px;
+  }
   .content-chat {
     font-size: 14px;
   }
-  .set-size{
+  .chat-plus{
     display: none;
   }
 }
